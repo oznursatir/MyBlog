@@ -1,0 +1,9 @@
+﻿@model MyBlog.Models.EditComment
+
+<form asp-action="EditComment" asp-controller="User" method="post">
+    <div class="form-group">
+        <input type="hidden" name="id" value="@Model.Id" />
+        <textarea class="form-control" name="content">@Model.Text</textarea>
+    </div>
+    <button type="submit" class="btn btn-primary">Kaydet</button>
+</form>

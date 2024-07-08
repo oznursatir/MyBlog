@@ -1,0 +1,77 @@
+﻿@model MyBlog.Models.ProfileViewModel
+
+<!-- Font Awesome -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+<!-- Bootstrap -->
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+<!-- Css -->
+<link rel="stylesheet" href="~/css/site.css" />
+
+<style>
+    .profile-container {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .picture {
+        margin:40px;
+
+    }
+
+    .text {
+        display: inline-block;
+        margin:40px;
+        font-size: 25px;
+    }
+
+    .button {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-top: 40px;
+        
+    }
+
+    .box {
+        background-color: rgba(211, 211, 211, 0.7);
+        border-radius: 60px;
+        padding: 20px; 
+      
+      
+    }
+
+    h1 {
+        text-align: center;
+        color: white;
+    }
+</style>
+
+<nav>
+    <div class="box">
+        <h1>Profiliniz</h1>
+        <div class="profile-container">
+            <div class="picture">
+                @if (!string.IsNullOrEmpty(Model.ProfilePictureUrl))
+                {
+                    <img style="border-radius:20px;" src="@Model.ProfilePictureUrl" alt="Profil Resmi" width="200" height="200" />
+                }
+                else
+                {
+                    <p>Profil resmi yok.</p>
+                }
+            </div>
+
+            <div class="text">
+                <p><strong>Ad Soyad:</strong> @Model.FullName</p>
+                <p><strong>E-posta:</strong> @Model.Email</p>
+                <p><strong>Kullanıcı Adı:</strong> @Model.Username</p>
+                <p><strong>Doğum Tarihi:</strong> @Model.DateOfBirth.ToString("dd/MM/yyyy")</p>
+                <p><strong>Cinsiyet:</strong> @Model.Gender</p>
+            </div>
+        </div>
+        <div class="button">
+            <a asp-action="Edit" class="btn btn-primary">Profili Düzenle</a>
+        </div>
+    </div>
+</nav>

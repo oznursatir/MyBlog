@@ -1,0 +1,106 @@
+﻿<!--USER DETAY-->
+
+@using X.PagedList
+@using X.PagedList.Mvc.Core
+@model MyBlog.Models.BlogPostCommentsViewModel
+
+@{
+    ViewData["Title"] = Model.BlogPost.Title;
+}
+<link rel="stylesheet" href="~/css/GeneralStyle.css" />
+<!-- Font Awesome -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+<!-- Bootstrap -->
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+<!-- Css -->
+<link rel="stylesheet" href="~/css/site.css" />
+
+<style>
+    .button {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        
+    }
+
+    .box {
+        margin-bottom: 20px;
+    }
+
+        .box img {
+            width: 700px; /* Resimlerin kart içinde genişliği %100 olsun */
+            height: auto; /* Yüksekliği otomatik ayarla */
+            margin-bottom: 10px; /* Resimler arasına boşluk bırak */
+            border-radius: 20px;
+            display: block; /* Resmi blok element olarak ayarla */
+            margin: 0 auto; /* Resmi yatayda ortala */
+            
+        }
+
+    
+</style>
+
+<div class="box">
+<h1>@Model.BlogPost.Title</h1>
+<p>@Model.BlogPost.Author - @Model.BlogPost.CreatedAt.ToString("yyyy-MM-dd")</p>
+
+<div>
+    @Html.Raw(Model.BlogPost.Content) <!-- CKEditor içeriğini doğru şekilde render eder -->
+</div>
+</div>
+<hr />
+<div class="box">
+
+
+<form asp-action="AddComment" asp-controller="User">
+    <div class="form-group">
+            <h2>Yorumunuz:</h2>
+        <label for="commentContent"></label>
+        <textarea class="form-control" id="commentContent" name="content" rows="3"></textarea>
+    </div>
+    <input type="hidden" name="postId" value="@Model.BlogPost.Id" />
+    @Html.AntiForgeryToken() <!-- CSRF koruma token'ı -->
+    <div class="button">
+            <button type="submit" class="btn btn-primary btn-margin">Yorum Yap</button>
+    </div>
+</form>
+</div>
+<hr />
+<div class="box">
+    <h2>Yorumlar</h2>
+    <br />
+<div id="commentsContainer">
+    @Html.Partial("_CommentsPartial", Model.PagedComments)
+</div>
+
+@if (Model.PagedComments.HasNextPage)
+{ 
+        <div class="button">
+            <button id="loadMoreComments" class="btn btn-secondary btn-margin" data-page="2" data-post-id="@Model.BlogPost.Id">Daha Fazla Yükle</button>
+        </div>
+}
+</div>
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('#loadMoreComments').click(function () {
+                var button = $(this);
+                var page = button.data('page');
+                var postId = button.data('post-id');
+
+                $.get('@Url.Action("Details", "User")', { id: postId, page: page }, function (data) {
+                    $('#commentsContainer').append(data);
+                    button.data('page', page + 1);
+
+                    if (data.trim() === '') {
+                        button.hide();
+                    }
+                });
+            });
+        });
+    </script>
+}
+</div>
+
+

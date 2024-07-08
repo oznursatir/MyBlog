@@ -1,0 +1,45 @@
+﻿<!--EDİTOR İNDEX-->
+
+@model IEnumerable<MyBlog.Models.BlogPost>
+
+@{
+    ViewData["Title"] = "Blog Posts";
+}
+
+<link rel="stylesheet" href="~/css/GeneralStyle.css" />
+<!-- Font Awesome -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+<!-- Bootstrap -->
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+<!-- Css -->
+<link rel="stylesheet" href="~/css/site.css" />
+
+<div class="box">
+<h1>Blog Posts</h1>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Başlık</th>
+            <th>Yazar</th>
+            <th>Oluşturulma Zamanı</th>
+            <th>Asiyon</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var post in Model)
+        {
+            <tr>
+                <td>@post.Title</td>
+                <td>@post.Author</td>
+                <td>@post.CreatedAt.ToString("g")</td>
+                <td>
+                    <a asp-action="Details" asp-route-id="@post.Id" class="btn btn-success">İçerik</a>
+                    <a asp-action="Edit" asp-route-id="@post.Id" class="btn btn-primary">Düzenle</a>
+                    <a asp-action="Delete" asp-route-id="@post.Id" class="btn btn-danger">Sil</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+</div>

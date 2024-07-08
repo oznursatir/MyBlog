@@ -1,0 +1,56 @@
+﻿@model MyBlog.Models.BlogPost
+
+@{
+    ViewData["Title"] = "Delete Blog Post";
+}
+
+<link rel="stylesheet" href="~/css/GeneralStyle.css" />
+<!-- Font Awesome -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+<!-- Bootstrap -->
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+<!-- Css -->
+<link rel="stylesheet" href="~/css/site.css" />
+
+<style>
+    .button {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .box {
+        margin-bottom: 20px;
+    }
+
+    .box img {
+            width: 700px; /* Resimlerin kart içinde genişliği %100 olsun */
+            height: auto; /* Yüksekliği otomatik ayarla */
+            margin-bottom: 10px; /* Resimler arasına boşluk bırak */
+            border-radius: 20px;
+            display: block; /* Resmi blok element olarak ayarla */
+            margin: 0 auto; /* Resmi yatayda ortala */
+        }
+
+    h6 {
+        text-align: center;
+    }
+</style>
+
+<div class="box">
+<h1>Yazıyı Sil</h1>
+
+
+<div>
+    <h4>@Model.Title</h4>
+        @Html.Raw(Model.Content) <!-- CKEditor içeriğini doğru şekilde render eder -->
+</div>
+    <h6>Bu gönderiyi silmek istediğinizden emin misiniz?</h6>
+<form asp-action="DeletePost" method="post">
+   <div class="button">
+    <input type="hidden" asp-for="Id" />
+    <button type="submit" class="btn btn-danger">Sil</button>
+    <a asp-action="Index" class="btn btn-secondary">İptal Et</a>
+   </div>
+</form>
+</div>

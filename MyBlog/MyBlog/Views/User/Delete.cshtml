@@ -1,0 +1,25 @@
+﻿@model MyBlog.Models.Comment
+
+@{
+    ViewData["Title"] = "Delete Comment";
+}
+
+<!-- Font Awesome -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+<!-- Bootstrap -->
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+<!-- Css -->
+<link rel="stylesheet" href="~/css/site.css" />
+
+<h1>Yorumu Sil</h1>
+
+<h3>Bu yorumu silmek istediğinizden emin misiniz?</h3>
+<div>
+    <p>@Model.Content</p>
+</div>
+
+<form asp-action="Delete" method="post">
+    <input type="hidden" asp-for="Id" />
+    <button type="submit" class="btn btn-danger">Sil</button> |
+    <a asp-action="Index" class="btn btn-secondary">İptal Et</a>
+</form>

@@ -1,0 +1,82 @@
+﻿<!--ADMİN INDEX-->
+
+@model MyBlog.Models.IndexViewModel
+
+<link rel="stylesheet" href="~/css/AdminIndexStyle.css" />
+
+<!-- Font Awesome -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+<!-- Bootstrap -->
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+<!-- Css -->
+<link rel="stylesheet" href="~/css/site.css" />
+
+
+<h1>Kullanıcıları Yönet</h1>
+
+<table class="table">
+    <thead>
+        <tr style="background-color:cornflowerblue;">
+            <th>Kullanıcı Adı</th>
+            <th>E-posta Adresi</th>
+            <th>Roller</th>
+            <th>Aksiyon</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var user in Model.Users)
+        {
+            <tr>
+                <td>@user.UserName</td>
+                <td>@user.Email</td>
+                <td>
+                    @foreach (var role in user.Roles)
+                    {
+                        <span>@role</span>
+                    }
+                <td>
+                    <a asp-action="EditUser" asp-route-userId="@user.Id" class="btn btn-primary">Düzenle</a>
+                    <form asp-action="DeleteUser" method="post" class="d-inline">
+                        <input type="hidden" name="userId" value="@user.Id" />
+                        <button type="submit" class="btn btn-danger" onclick="return confirm('Bu kullanıcıyı silmek istediğinizden emin misiniz?')">Sil</button>
+                    </form>
+                </td>
+                
+            </tr>
+        }
+    </tbody>
+</table>
+
+
+<h1>İçerikleri Yönet</h1>
+
+<table class="table">
+    <thead>
+        <tr style="background-color:cornflowerblue">
+            <th class="baslik">Başlık</th>
+            <th class="yazar">Yazar</th>
+            <th class="zaman">Oluşturulma Zamanı</th>
+            <th class="aksiyon">Aksiyon</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var post in Model.BlogPost)
+        {
+            <tr>
+                <td>@post.Title</td>
+                <td>@post.Author</td>
+                <td>@post.CreatedAt.ToString("g")</td>
+                <td>
+                    <a asp-action="Details" asp-route-id="@post.Id" class="btn btn-success">İçerik</a>
+                    <a asp-action="EditPost" asp-route-id="@post.Id" class="btn btn-primary">Düzenle</a>
+                    <a asp-action="DeletePost" asp-route-id="@post.Id" class="btn btn-danger">Sil</a>
+                 
+                    
+
+
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+

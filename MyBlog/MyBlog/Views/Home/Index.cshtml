@@ -1,0 +1,120 @@
+﻿@model MyBlog.Models.BlogPost;
+@{
+    ViewData["Title"] = "Home Page";
+}
+<!-- Font Awesome -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+<!-- Bootstrap -->
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+<!-- Css -->
+<link rel="stylesheet" href="~/css/StyleSheet.css" />
+<link rel="stylesheet" href="~/css/site.css" />
+
+
+
+<body>
+
+<div class="slideshow-container">
+
+<div class="mySlides fade">
+  <div class="numbertext">1 / 4</div>
+  <img src="~/images/tanitim/th.jpg" style="width:100%">
+            <div class="text" >
+                <h2>Hayata Yeni Bir Perspektiften Bakın</h2>
+                <p>Bilgilendirici makaleler, derinlemesine analizler ve ilham verici hikayeler ile zenginleştirilmiş bir bloga hoş geldiniz</p>
+            </div>
+</div>
+
+<div class="mySlides fade">
+  <div class="numbertext">2 / 4</div>
+  <img src="~/images/tanitim/zeka.jpg" style="width:100%">
+            <div class="text">
+                <h2>Blogumuzda neler bulabilirsiniz?</h2>
+
+                <p>Blogumuzda teknoloji, sanat, seyahat ve daha birçok konuda yazılmış özgün makaleler bulabilirsiniz. Her yazımız, konusuna derinlemesine bir bakış açısı sunarak sizi bilgilendirmeyi ve ilham vermeyi amaçlıyor.</p>
+            </div>
+</div>
+
+<div class="mySlides fade">
+  <div class="numbertext">3 / 4</div>
+  <img src="~/images/tanitim/register.jpg" style="width:100%">
+            <div class="text">
+                <h2>Neden Kayıt Olmalısınız?</h2>
+                <p>
+                •Sadece Üyelere Özel İçerikler: Özel makaleler, derinlemesine analizler ve daha fazlası.
+                <br />
+                •Haftalık Bültenler: En yeni içerikler ve haberlerle haftalık güncellemeler.
+                <br />
+                •İlham Verici Hikayeler: İlham almak ve yeni fikirler keşfetmek için.
+                </p>
+                <h3 style="color:black">
+                    <a href="https://localhost:44371/Identity/Account/Register">Şimdi Kayıt Ol</a>
+                </h3>
+                
+
+                Blogumuza üye olarak, özel içeriklere erişim sağlayabilir ve haftalık bültenlerimizden faydalanabilirsiniz. Sadece birkaç dakika içinde üye olabilir ve bu ayrıcalıklardan yararlanmaya başlayabilirsiniz.
+            </div>
+</div>
+
+        <div class="mySlides fade">
+            <div class="numbertext">4 / 4</div>
+            <img src="~/images/tanitim/services-7.jpg" style="width:100%">
+            <div class="text">
+                <h2>Bizi Takip Edin En Güncel İçeriklere Anında Erişin</h2>
+
+                
+                <p>
+                   <a href="#"> Facebook: facebook.com/MyBlog</a>
+                   <br />
+                    <a href="#"> Twitter: twitter.com/MyBlog</a>
+                    <br />
+                    <a href="#"> Instagram: instagram.com/MyBlog</a>
+                </p>
+            </div>
+        </div>
+
+<a class="prev" onclick="plusSlides(-1)">❮</a>
+<a class="next" onclick="plusSlides(1)">❯</a>
+
+</div>
+<br>
+
+<div style="text-align:center">
+  <span class="dot" onclick="currentSlide(1)"></span> 
+  <span class="dot" onclick="currentSlide(2)"></span> 
+  <span class="dot" onclick="currentSlide(3)"></span>
+  <span class="dot" onclick="currentSlide(4)"></span>
+    </div>
+
+<script>
+let slideIndex = 1;
+showSlides(slideIndex);
+
+function plusSlides(n) {
+  showSlides(slideIndex += n);
+}
+
+function currentSlide(n) {
+  showSlides(slideIndex = n);
+}
+
+function showSlides(n) {
+  let i;
+  let slides = document.getElementsByClassName("mySlides");
+  let dots = document.getElementsByClassName("dot");
+  if (n > slides.length) {slideIndex = 1}    
+  if (n < 1) {slideIndex = slides.length}
+  for (i = 0; i < slides.length; i++) {
+    slides[i].style.display = "none";  
+  }
+  for (i = 0; i < dots.length; i++) {
+    dots[i].className = dots[i].className.replace(" active", "");
+  }
+  slides[slideIndex-1].style.display = "block";
+            slides[slideIndex - 1].style.opacity = "1";
+  dots[slideIndex-1].className += " active";
+}
+</script>
+
+</body>
+</html> 

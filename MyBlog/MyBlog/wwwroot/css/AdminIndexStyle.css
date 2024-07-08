@@ -1,0 +1,75 @@
+﻿
+
+
+/* Tablo stilleri */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+    table-layout: auto;
+}
+
+
+th, td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+
+th {
+   
+    color: white; /* Başlık metin rengi */
+}
+tr:nth-child(odd) {
+    background-color: lightgray;
+}
+tr:nth-child(even) {
+    background-color:whitesmoke; /* Çift sıraların arka plan rengi */
+}
+
+/* Buton stilleri */
+.btn {
+    padding: 8px 12px;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.btn-primary {
+    background-color: #007bff;
+    color: #fff;
+}
+
+.btn-danger {
+    background-color: #dc3545;
+    color: #fff;
+}
+
+.btn-success {
+    background-color: #28a745;
+    color: #fff;
+}
+
+h1 {
+    color: white;
+    text-align:center;
+}
+
+/* Manuel sütun genişlikleri */
+
+.baslik {
+    width: 30%;
+}
+
+.yazar {
+    width: 25%;
+}
+
+.zaman {
+    width: 20%;
+}
+
+.aksiyon {
+    width:35%;
+}
+

@@ -1,0 +1,88 @@
+﻿@model MyBlog.Models.ProfileViewModel
+
+
+
+   <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <!--Css -->
+
+    <link rel="stylesheet" href="~/css/site.css" />
+
+<style>
+    .genel {
+        background-color: rgba(211, 211, 211, 0.7);
+        border-radius: 60px;
+    }
+
+        .genel .ayar h1 {
+            color: white;
+            text-align: center;
+        }
+
+    .form-group {
+        margin: 20px;
+    }
+
+    .ayar {
+        margin: 20px;
+    }
+
+    .btn-margin {
+        margin-bottom: 20px;
+    }
+
+    .bold-label {
+        font-weight: bold;
+    }
+</style>
+   
+
+    <div class="genel">
+        <div class="ayar">
+    <h1>Profili Güncelle</h1>
+<form asp-action="Edit" method="post" enctype="multipart/form-data">
+     
+    <input type="hidden" asp-for="Id" />
+
+    <div class="form-group">
+        <label asp-for="FullName" class="bold-label">Ad-Soyad</label>
+        <input asp-for="FullName" class="form-control" />
+    </div>
+    <div class="form-group">
+        <label asp-for="Email" class="bold-label">Email</label>
+        <input asp-for="Email" class="form-control" />
+    </div>
+    <div class="form-group">
+        <label asp-for="DateOfBirth" class="bold-label">Doğum Tarihi</label>
+        <input asp-for="DateOfBirth" class="form-control" type="date" />
+    </div>
+    <div class="form-group">
+        <label asp-for="Gender" class="bold-label">Cinsiyet</label>
+        <select asp-for="Gender" class="form-control">
+            <option value="Erkek">Erkek</option>
+            <option value="Kadın">Kadın</option>
+        </select>
+    </div>
+    <div class="form-group">
+        <label asp-for="Username" class="bold-label">Kullanıcı Adı</label>
+        <input asp-for="Username" class="form-control" />
+    </div>
+    
+    
+    <div class="form-group">
+        <label asp-for="ProfilePicture" class="bold-label">Profil Fotoğrafı</label>
+        <input asp-for="ProfilePicture" class="form-control-file" type="file" />
+    </div>
+
+    <div class="text-center">
+                <button type="submit" class="btn btn-success btn-margin">Kaydet</button>
+                <a asp-action="ChangePassword" class="btn btn-primary btn-margin">Parola Güncelle</a>
+                <a asp-action="Index" class="btn btn-secondary btn-margin">Geri Dön</a>
+    </div>
+    
+
+</form>
+    </div>
+</div>

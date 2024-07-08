@@ -1,0 +1,26 @@
+﻿@using X.PagedList
+@model IPagedList<MyBlog.Models.Comment>
+
+
+@foreach (var comment in Model)
+{
+    <div class="card mb-3">
+        <div class="card-body">
+            <p class="card-text">@comment.Content</p>
+            <small class="text-muted">Yorum Yapan: @comment.User.UserName - @comment.CreatedAt.ToString("yyyy-MM-dd HH:mm")</small>
+            @if (User.Identity.Name == comment.User.UserName || User.IsInRole("Admin"))
+            {
+                <div class="d-flex justify-content-end">
+                    <form asp-action="EditComment" asp-controller="User" method="get" class="mr-1">
+                        <input type="hidden" name="id" value="@comment.Id" />
+                        <button type="submit" class="btn btn-primary">Düzenle</button>
+                    </form>
+                    <form asp-action="DeleteComment" asp-controller="User" method="post">
+                        <input type="hidden" name="id" value="@comment.Id" />
+                        <button type="submit" class="btn btn-danger">Sil</button>
+                    </form>
+                </div>
+            }
+        </div>
+    </div>
+}

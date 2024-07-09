@@ -1,0 +1,11 @@
+﻿@model MyBlog.Models.EditComment
+
+<form id="editCommentForm" asp-action="EditCommentDetails" asp-controller="User" method="post">
+    @Html.HiddenFor(model => model.CommentId)
+    <div class="form-group">
+        @Html.LabelFor(model => model.Text)
+        @Html.TextAreaFor(model => model.Text, new { @class = "form-control", rows = 3 })
+        @Html.ValidationMessageFor(model => model.Text, "", new { @class = "text-danger" })
+    </div>
+    <button type="submit" class="btn btn-primary">Kaydet</button>
+</form>

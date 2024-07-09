@@ -1,9 +1,12 @@
 ﻿@model MyBlog.Models.EditComment
 
-<form asp-action="EditComment" asp-controller="User" method="post">
+<form id="editCommentForm" asp-action="EditCommentDetails" asp-controller="User" method="post">
+    @Html.AntiForgeryToken()
+    <input type="hidden" name="Id" value="@Model.Id" />
+    <input type="hidden" name="CommentId" value="@Model.CommentId" />
     <div class="form-group">
-        <input type="hidden" name="id" value="@Model.Id" />
-        <textarea class="form-control" name="content">@Model.Text</textarea>
+        <label for="editCommentText">Yorum</label>
+        <textarea class="form-control" id="editCommentText" name="Text" rows="3">@Model.Text</textarea>
     </div>
     <button type="submit" class="btn btn-primary">Kaydet</button>
 </form>

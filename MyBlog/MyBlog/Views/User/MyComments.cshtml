@@ -67,9 +67,13 @@
         @foreach (var comment in Model)
         {
             <tr>
-                <td>@comment.BlogPost.Title</td>
+                <td>
+                        <a asp-controller="User" asp-action="Details" asp-route-id="@comment.BlogPost.Id">
+                            @comment.BlogPost.Title
+                        </a>
+                </td>
                 <td>@comment.BlogPost.Author</td>
-                <td>@comment.CreatedAt.ToString("yyyy-MM-dd")</td>
+                <td>@comment.CreatedAt.ToString("dd-MM-yyyy")</td>
                 <td>@comment.Content</td>
                 <td>
                     <a class="btn btn-primary" asp-action="EditComment" asp-route-id="@comment.Id">Düzenle</a>

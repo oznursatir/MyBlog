@@ -228,6 +228,80 @@ namespace MyBlog.Controllers
             return View(editComment);
         }
 
+        [HttpGet]
+        public async Task<IActionResult> EditCommentDetails(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var comment = await _context.Comments.FindAsync(id);
+            if (comment == null)
+            {
+                return NotFound();
+            }
+
+            var currentUser = await _userManager.GetUserAsync(User);
+            var isAdmin = User.IsInRole("Admin");
+            if (comment.UserId != currentUser.Id && !isAdmin)
+            {
+                return Forbid();
+            }
+
+            var editComment = new EditComment
+            {
+                Id = comment.Id,
+                CommentId = comment.Id,
+                Text = comment.Content,
+
+            };
+            return PartialView(editComment);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditCommentDetails(int id, EditComment editComment)
+        {
+            if (id != editComment.Id)
+            {
+                return NotFound();
+            }
+
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    var comment = await _context.Comments.FindAsync(editComment.CommentId);
+                    if (comment == null)
+                    {
+                        return NotFound();
+                    }
+
+                    comment.Content = editComment.Text;
+
+                    _context.Update(comment);
+                    await _context.SaveChangesAsync();
+
+                    return Json(new { success = true, postId = comment.BlogPostId });
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!CommentExists(editComment.Id))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
+                
+            }
+
+            return PartialView(editComment);
+        }
+
         private bool CommentExists(int id)
         {
             return _context.Comments.Any(e => e.Id == id);

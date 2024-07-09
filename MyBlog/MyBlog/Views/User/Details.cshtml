@@ -98,9 +98,39 @@
                     }
                 });
             });
+
+            $(document).on('click', '.edit-comment', function () {
+                var commentId = $(this).data('comment-id');
+                var cardBody = $(this).closest('.card-body');
+
+                $.get('@Url.Action("EditCommentDetails", "User")', { id: commentId }, function (data) {
+                    cardBody.html(data);
+                }).fail(function (xhr, status, error) {
+                    console.error("AJAX request failed:", status, error);
+                });
+            });
+
+            $(document).on('submit', '#editCommentForm', function (e) {
+                e.preventDefault();
+
+                var form = $(this);
+                var formData = form.serialize();
+                $.post(form.attr('action'), formData, function (response) {
+                    if (response.success) {
+                        // Kaydetme başarılı olduysa sayfayı yenile
+                        location.reload();
+                    } else {
+                        // Başarısız olduysa formu yeniden yükle
+                        form.closest('.card-body').html(response);
+                    }
+                }).fail(function (xhr, status, error) {
+                    console.error("AJAX request failed:", status, error);
+                });
+            });
         });
     </script>
 }
+
 </div>
 
 

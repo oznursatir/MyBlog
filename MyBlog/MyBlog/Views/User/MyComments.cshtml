@@ -80,7 +80,7 @@
                     <form asp-action="DeleteComment" method="post" style="display:inline;">
                         <input type="hidden" name="id" value="@comment.Id" />
                             <input type="hidden" name="returnUrl" value="@Url.Action("MyComments")" />
-                        <button type="submit" class="btn btn-danger">Sil</button>
+                            <button type="submit" class="btn btn-danger" onclick="return confirm('Bu yorumu silmek istediğinizden emin misiniz?')">Sil</button>
                     </form>
                 </td>
             </tr>

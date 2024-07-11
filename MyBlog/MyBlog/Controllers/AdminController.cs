@@ -30,13 +30,43 @@ namespace MyBlog.Controllers
             _userManager = userManager;
         }
 
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string userSearch, string postSearch)
         {
              // Tüm kullanıcıları çek
             var users = await _userManager.Users.ToListAsync();
 
             // Tüm blog gönderilerini çek
             var posts = await _context.BlogPosts.ToListAsync();
+
+            if (!string.IsNullOrEmpty(userSearch))
+            {
+                string normalizedUserSearch = userSearch.ToLower().Replace(" ", "");
+
+                var filteredUsers = new List<CustomUser>();
+                foreach (var user in users)
+                {
+                    var roles = await _userManager.GetRolesAsync(user);
+
+                    if (user.UserName.ToLower().Replace(" ", "").Contains(normalizedUserSearch) ||
+                        user.Email.ToLower().Replace(" ", "").Contains(normalizedUserSearch) ||
+                        user.FullName.ToLower().Replace(" ", "").Contains(normalizedUserSearch) ||
+                        roles.Any(r => r.ToLower().Replace(" ", "").Contains(normalizedUserSearch)))
+                    {
+                        filteredUsers.Add(user);
+                    }
+                }
+
+                users = filteredUsers;
+            }
+
+            if (!string.IsNullOrEmpty(postSearch))
+            {
+                string normalizedPostSearch = postSearch.ToLower().Replace(" ", "");
+
+                posts = posts.Where(p =>
+                    p.Title.ToLower().Replace(" ", "").Contains(normalizedPostSearch) ||
+                    p.Author.ToLower().Replace(" ", "").Contains(normalizedPostSearch)).ToList();
+            }
 
             // Kullanıcı listesi modeline dönüştür
             var userList = new List<UserViewModel>();
@@ -307,6 +337,8 @@ namespace MyBlog.Controllers
 
             return View(viewModel);
         }
+
+       
 
     }
 

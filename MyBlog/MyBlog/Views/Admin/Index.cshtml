@@ -14,6 +14,13 @@
 
 <h1>Kullanıcıları Yönet</h1>
 
+<form method="get" asp-action="Index">
+    <div class="form-group">
+        <input type="text" name="userSearch" value="@Context.Request.Query["userSearch"]" class="form-control" placeholder="Kullanıcı Adı, E-posta, Tam Ad veya Rol">
+        <button type="submit" class="btn btn-primary mt-2">Ara</button>
+    </div>
+</form>
+
 <table class="table">
     <thead>
         <tr style="background-color:cornflowerblue;">
@@ -49,6 +56,13 @@
 
 
 <h1>İçerikleri Yönet</h1>
+
+<form method="get" asp-action="Index">
+    <div class="form-group">
+        <input type="text" name="postSearch" value="@Context.Request.Query["postSearch"]" class="form-control" placeholder="Başlık veya Yazar">
+        <button type="submit" class="btn btn-primary mt-2">Ara</button>
+    </div>
+</form>
 
 <table class="table">
     <thead>

@@ -30,72 +30,94 @@ namespace MyBlog.Controllers
             _userManager = userManager;
         }
 
-        public async Task<IActionResult> Index(string userSearch, string postSearch)
+        public async Task<IActionResult> Index()
         {
-             // Tüm kullanıcıları çek
-            var users = await _userManager.Users.ToListAsync();
+            return View();
+        }
 
-            // Tüm blog gönderilerini çek
-            var posts = await _context.BlogPosts.ToListAsync();
+        [HttpPost]
+        public async Task<IActionResult> LoadUsers()
+        {
+            var draw = HttpContext.Request.Form["draw"].FirstOrDefault();
+            var start = Request.Form["start"].FirstOrDefault();
+            var length = Request.Form["length"].FirstOrDefault();
+            var searchValue = Request.Form["search[value]"].FirstOrDefault();
+            var sortColumn = Request.Form["columns[" + Request.Form["order[0][column]"].FirstOrDefault() + "][data]"].FirstOrDefault();
+            var sortColumnDirection = Request.Form["order[0][dir]"].FirstOrDefault();
 
-            if (!string.IsNullOrEmpty(userSearch))
+            var users = _userManager.Users.AsQueryable();
+
+            if (!string.IsNullOrEmpty(searchValue))
             {
-                string normalizedUserSearch = userSearch.ToLower().Replace(" ", "");
-
-                var filteredUsers = new List<CustomUser>();
-                foreach (var user in users)
-                {
-                    var roles = await _userManager.GetRolesAsync(user);
-
-                    if (user.UserName.ToLower().Replace(" ", "").Contains(normalizedUserSearch) ||
-                        user.Email.ToLower().Replace(" ", "").Contains(normalizedUserSearch) ||
-                        user.FullName.ToLower().Replace(" ", "").Contains(normalizedUserSearch) ||
-                        roles.Any(r => r.ToLower().Replace(" ", "").Contains(normalizedUserSearch)))
-                    {
-                        filteredUsers.Add(user);
-                    }
-                }
-
-                users = filteredUsers;
+                var normalizedSearch = searchValue.ToLower().Replace(" ", "");
+                users = users.Where(u => u.UserName.ToLower().Contains(normalizedSearch) ||
+                                         u.Email.ToLower().Contains(normalizedSearch) ||
+                                         u.FullName.ToLower().Contains(normalizedSearch));
             }
 
-            if (!string.IsNullOrEmpty(postSearch))
-            {
-                string normalizedPostSearch = postSearch.ToLower().Replace(" ", "");
+            var totalRecords = await users.CountAsync();
+            var userData = await users.Skip(int.Parse(start)).Take(int.Parse(length)).ToListAsync();
 
-                posts = posts.Where(p =>
-                    p.Title.ToLower().Replace(" ", "").Contains(normalizedPostSearch) ||
-                    p.Author.ToLower().Replace(" ", "").Contains(normalizedPostSearch)).ToList();
+            var roles = new List<string>();
+            foreach (var user in userData)
+            {
+                roles.Add(string.Join(", ", await _userManager.GetRolesAsync(user)));
             }
 
-            // Kullanıcı listesi modeline dönüştür
-            var userList = new List<UserViewModel>();
-
-            foreach (var user in users)
+            var jsonData = new
             {
-                // Kullanıcının rollerini al
-                var roles = await _userManager.GetRolesAsync(user);
-
-                // Kullanıcı modeline ekle
-                var userModel = new UserViewModel
-                {
-                    Id = user.Id,
-                    UserName = user.UserName,
-                    Email = user.Email,
-                    Roles = roles
-                };
-
-                userList.Add(userModel);
-            }
-
-            var viewModel = new IndexViewModel
-            {
-                Users = userList,
-                BlogPost = posts
+                draw = draw,
+                recordsFiltered = totalRecords,
+                recordsTotal = totalRecords,
+                data = userData.Select((u, i) => new {
+                    u.UserName,
+                    u.Email,
+                    Roles = roles[i],
+                    u.Id
+                }).ToList()
             };
 
-            return View(viewModel);
+            return Ok(jsonData);
         }
+
+        [HttpPost]
+        public async Task<IActionResult> LoadPosts()
+        {
+            var draw = HttpContext.Request.Form["draw"].FirstOrDefault();
+            var start = Request.Form["start"].FirstOrDefault();
+            var length = Request.Form["length"].FirstOrDefault();
+            var searchValue = Request.Form["search[value]"].FirstOrDefault();
+            var sortColumn = Request.Form["columns[" + Request.Form["order[0][column]"].FirstOrDefault() + "][data]"].FirstOrDefault();
+            var sortColumnDirection = Request.Form["order[0][dir]"].FirstOrDefault();
+
+            var posts = _context.BlogPosts.AsQueryable();
+
+            if (!string.IsNullOrEmpty(searchValue))
+            {
+                var normalizedSearch = searchValue.ToLower().Replace(" ", "");
+                posts = posts.Where(p => p.Title.ToLower().Contains(normalizedSearch) ||
+                                         p.Author.ToLower().Contains(normalizedSearch));
+            }
+
+            var totalRecords = await posts.CountAsync();
+            var postData = await posts.Skip(int.Parse(start)).Take(int.Parse(length)).ToListAsync();
+
+            var jsonData = new
+            {
+                draw = draw,
+                recordsFiltered = totalRecords,
+                recordsTotal = totalRecords,
+                data = postData.Select(p => new {
+                    p.Title,
+                    p.Author,
+                    CreatedAt = p.CreatedAt.ToString("g"),
+                    p.Id
+                }).ToList()
+            };
+
+            return Ok(jsonData);
+        }
+
 
         [HttpGet]
         public IActionResult EditUser(string userId)

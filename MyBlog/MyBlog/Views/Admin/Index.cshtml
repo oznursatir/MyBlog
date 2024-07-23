@@ -1,6 +1,5 @@
 ﻿<!--ADMİN INDEX-->
 
-@model MyBlog.Models.IndexViewModel
 
 <link rel="stylesheet" href="~/css/AdminIndexStyle.css" />
 
@@ -10,87 +9,130 @@
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 <!-- Css -->
 <link rel="stylesheet" href="~/css/site.css" />
+<!--datatables css-->
+<link rel="stylesheet" href="https://cdn.datatables.net/2.0.8/css/dataTables.jqueryui.min.css" />
 
+<style>
+    .table tbody tr:nth-child(odd){
+        background-color:white;
+    }
+
+    .table tbody tr:nth-child(even) {
+        background-color: lightgray;
+    }
+
+    .dataTables_wrapper .dataTables_filter input {
+        background-color: #f0f0f0;
+    }
+
+    .dt-container{
+        background-color: white ;
+    }
+</style>
 
 <h1>Kullanıcıları Yönet</h1>
 
-<form method="get" asp-action="Index">
-    <div class="form-group">
-        <input type="text" name="userSearch" value="@Context.Request.Query["userSearch"]" class="form-control" placeholder="Kullanıcı Adı, E-posta, Tam Ad veya Rol">
-        <button type="submit" class="btn btn-primary mt-2">Ara</button>
-    </div>
-</form>
 
-<table class="table">
+
+<table id="userTable" class="table">
     <thead>
         <tr style="background-color:cornflowerblue;">
-            <th>Kullanıcı Adı</th>
-            <th>E-posta Adresi</th>
-            <th>Roller</th>
-            <th>Aksiyon</th>
+
         </tr>
     </thead>
     <tbody>
-        @foreach (var user in Model.Users)
-        {
-            <tr>
-                <td>@user.UserName</td>
-                <td>@user.Email</td>
-                <td>
-                    @foreach (var role in user.Roles)
-                    {
-                        <span>@role</span>
-                    }
-                <td>
-                    <a asp-action="EditUser" asp-route-userId="@user.Id" class="btn btn-primary">Düzenle</a>
-                    <form asp-action="DeleteUser" method="post" class="d-inline">
-                        <input type="hidden" name="userId" value="@user.Id" />
-                        <button type="submit" class="btn btn-danger" onclick="return confirm('Bu kullanıcıyı silmek istediğinizden emin misiniz?')">Sil</button>
-                    </form>
-                </td>
-                
-            </tr>
-        }
+       
     </tbody>
 </table>
 
 
 <h1>İçerikleri Yönet</h1>
 
-<form method="get" asp-action="Index">
-    <div class="form-group">
-        <input type="text" name="postSearch" value="@Context.Request.Query["postSearch"]" class="form-control" placeholder="Başlık veya Yazar">
-        <button type="submit" class="btn btn-primary mt-2">Ara</button>
-    </div>
-</form>
 
-<table class="table">
+<table id="postTable" class="table">
     <thead>
         <tr style="background-color:cornflowerblue">
-            <th class="baslik">Başlık</th>
-            <th class="yazar">Yazar</th>
-            <th class="zaman">Oluşturulma Zamanı</th>
-            <th class="aksiyon">Aksiyon</th>
+
         </tr>
     </thead>
     <tbody>
-        @foreach (var post in Model.BlogPost)
-        {
-            <tr>
-                <td>@post.Title</td>
-                <td>@post.Author</td>
-                <td>@post.CreatedAt.ToString("g")</td>
-                <td>
-                    <a asp-action="Details" asp-route-id="@post.Id" class="btn btn-success">İçerik</a>
-                    <a asp-action="EditPost" asp-route-id="@post.Id" class="btn btn-primary">Düzenle</a>
-                    <a asp-action="DeletePost" asp-route-id="@post.Id" class="btn btn-danger">Sil</a>
-                 
-                    
-
-
-                </td>
-            </tr>
-        }
+      
     </tbody>
 </table>
+@* <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> *@
+
+@section Scripts {
+    <script src="https://cdn.datatables.net/2.0.8/js/dataTables.min.js"></script>
+
+    <script src="https://cdn.datatables.net/2.0.8/js/dataTables.jqueryui.min.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            LoadUsers();
+            LoadPosts();
+            
+        
+        });
+        function LoadUsers() {
+            $('#userTable').DataTable({
+                "processing": true,
+                "serverSide": true,
+                "responsive": true,
+                "language": {
+                    "url": "https://cdn.datatables.net/plug-ins/2.0.8/i18n/tr.json"
+                },
+                "ajax": {
+                    "url": "/Admin/LoadUsers",
+                    "type": "POST",
+                    "datatype": "json"
+                },
+                "columns": [
+                    { "data": "userName", "name": "UserName","title":"Kullanıcı Adı" },
+                    { "data": "email", "name": "Email", "title": "E-mail" },
+                    { "data": "roles", "name": "Roles", "title": "Rol" },
+                    {
+                        "data": "id",
+                        "render": function (data) {
+                            return `<a href="/Admin/EditUser?userId=${data}">Edit</a> |
+                                                <a href="/Admin/DeleteUser?userId=${data}">Delete</a>`;
+                        },
+                        "orderable": false,
+                        "title": "Aksiyon"
+                    }
+                ]
+            });
+        }
+        function LoadPosts() {
+            $('#postTable').DataTable({
+                "processing": true,
+                "serverSide": true,
+                responsive: true,
+                "language": {
+                    "url": "https://cdn.datatables.net/plug-ins/2.0.8/i18n/tr.json"
+                },
+                "ajax": {
+                    "url": "/Admin/LoadPosts",
+                    "type": "POST",
+                    "datatype": "json"
+                },
+                "columns": [
+                    { "data": "title", "name": "Title", "title": "Başlık" },
+                    { "data": "author", "name": "Author", "title": "Yazar" },
+                    { "data": "createdAt", "name": "CreatedAt", "title": "Oluşturma Tarihi" },
+                    {
+                        "data": "id",
+                        "render": function (data) {
+                            return `<a href="/Admin/EditPost?id=${data}">Edit</a> |
+                                            <a href="/Admin/DeletePost?id=${data}">Delete</a>`;
+                        },
+                        "orderable": false,
+                        "title":"Aksiyon"
+                    }
+                ]
+            });
+
+        }
+
+    </script>
+}
 

@@ -4,8 +4,6 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
 <!-- Bootstrap -->
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-<!-- Css -->
-<link rel="stylesheet" href="~/css/site.css" />
 
 <style>
     .profile-container {
@@ -30,14 +28,17 @@
         justify-content: center;
         align-items: center;
         margin-top: 40px;
-        
     }
 
+    .btn{
+        border-radius:50px;
+    }
     .box {
-        background-color: rgba(211, 211, 211, 0.7);
+        box-shadow: 0 0 25px rgba(0, 0, 0, 0.3);
         border-radius: 60px;
         padding: 20px; 
-      
+       margin-top:40px;
+       margin-bottom:40px;
       
     }
 
@@ -71,7 +72,7 @@
             </div>
         </div>
         <div class="button">
-            <a asp-action="Edit" class="btn btn-primary">Profili Düzenle</a>
+            <a asp-action="Edit" class="btn btn-dark">Profili Düzenle</a>
         </div>
     </div>
 </nav>

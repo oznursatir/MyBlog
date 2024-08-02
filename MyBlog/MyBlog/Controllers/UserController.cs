@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Query;
 using MyBlog.Data;
 using MyBlog.Data.Migrations;
 using MyBlog.Models;
@@ -46,35 +47,27 @@ namespace MyBlog.Controllers
             return View("Index", model);
         }
 
-        public async Task<IActionResult> Details(int id, int? page)
+        public async Task<IActionResult> Details(int id)
         {
-            var content = await _context.BlogPosts
-                .Include(b => b.Comments)
-                .ThenInclude(c => c.User)
-                .FirstOrDefaultAsync(b => b.Id == id);
+            var content = await _context.BlogPosts.FirstOrDefaultAsync(b => b.Id == id);
 
             if (content == null)
             {
                 return NotFound();
             }
 
-            int pageSize = 5;
-            int pageNumber = page ?? 1;
-
-            var comments = content.Comments.OrderByDescending(c => c.CreatedAt).ToPagedList(pageNumber, pageSize);
-
             var viewModel = new BlogPostCommentsViewModel
             {
                 BlogPost = content,
-                PagedComments = comments
             };
 
-            if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
-            {
-                return PartialView("_CommentsPartial", viewModel.PagedComments);
-            }
-
             return View(viewModel);
+        }
+
+        public async Task<IActionResult> GetComments(int blogId,int page)
+        {
+            var comments = _context.Comments.Where(w => w.BlogPostId == blogId).OrderByDescending(c => c.CreatedAt).Skip((page-1)*5).Take(5).Include(i=>i.User).ToPagedList();
+            return PartialView("_CommentsPartial", comments);
         }
 
         [HttpPost]
@@ -83,7 +76,7 @@ namespace MyBlog.Controllers
         {
             if (string.IsNullOrWhiteSpace(content))
             {
-                // Hata mesajı gösterme, geri dönme veya başka bir işlem yapma
+                return Json(new { success = false, message = "Yorum içeriği boş olamaz." });
             }
 
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -92,7 +85,8 @@ namespace MyBlog.Controllers
             {
                 Content = content,
                 BlogPostId = postId,
-                UserId = userId
+                UserId = userId,
+                CreatedAt = DateTime.Now
             };
 
             _context.Comments.Add(comment);

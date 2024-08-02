@@ -1,126 +1,158 @@
 ﻿@model IEnumerable<MyBlog.Models.BlogPost>
 
-<link rel="stylesheet" href="~/css/GeneralStyle.css" />
-<!-- Font Awesome -->
+
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
-<!-- Bootstrap -->
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-<!-- Css -->
-<link rel="stylesheet" href="~/css/site.css" />
 
 <style>
+
     .card {
-        height: 400px; /* Kartların sabit yüksekliği */
-        width: 350px; /* Kartların genişliği */
-        overflow: hidden; /* İçeriği aşan kısımları gizle */
+        height: 450px;
+        width: 350px;
+        overflow: hidden;
         display: flex;
         flex-direction: column;
-        justify-content: space-between; /* Dikeyde elemanları yayar */
-        align-items: center; /* Yatayda elemanları ortalar */
-        margin: 15px; /* Kartlar arasında boşluk */
-        text-align: center; /* Metinleri ortalar */
-        position: relative; /* Konumunu belirt */
+        justify-content: space-between;
+        align-items: center;
+        margin: 15px;
+        text-align: center;
+        position: relative;
         border-radius: 15px;
+        box-shadow: 0 0 25px rgba(0, 0, 0, 0.3)
     }
 
     .card-body {
+        font-family:inherit;
         display: flex;
         flex-direction: column;
-        justify-content: space-between; /* Dikeyde elemanları yayar */ */
-        align-items: center; /* Yatayda elemanları ortalar */
+        justify-content: space-between;
+        align-items: center;
         padding: 15px;
-        height: 100%; /* Kartın tamamını kaplar */
+        height: 100%;
+        
     }
 
     .card-title {
-        font-size: 1.25rem; /* Başlık boyutu */
-        margin-bottom: 15px;
-    }
-
-    .card-text img {
-        max-width: 100%;
-        max-height: 200px; /* Resim yüksekliği sınırı */
-        display: block;
-        margin: 0 auto 15px; /* Alt boşluk ekle */
-        align-self: flex-start; /* Fotoğrafı üste yerleştir */
+        font-size:18px;
+        margin-bottom: 10px;
     }
 
     .card-text {
+        margin:0px;
+        padding:0px;
         flex-grow: 1;
-        overflow: hidden; /* Fazla metni gizle */
-        font-size: 1rem; /* Metin boyutu */
-        line-height: 1.5rem; /* Satır yüksekliği */
-        text-align: left; /* Metni sol ortala */
+        overflow: hidden;
+        font-size: 16px;
+        line-height: 1.5rem;
+        text-align: left;
     }
 
     .truncate {
         display: -webkit-box;
-        -webkit-line-clamp: 5; /* Görünecek satır sayısı */
+        -webkit-line-clamp: 5;
         -webkit-box-orient: vertical;
         overflow: hidden;
         text-overflow: ellipsis;
     }
 
     .btn {
-
-        margin-top:auto;
-        align-self: center; /* Yatayda ortala */
-        position: absolute; /* Mutlaka konumu sabit kalsın */
-        bottom: 15px; /* Kartın alt kenarına 15px mesafe bırak */
-        
+        position: absolute;
+        bottom: 15px;
+        right: 15px;
+        font-size:10px;
+        border-radius:50px;
     }
 
-</style>
-<div class="box">
-<h1>İÇERİKLER</h1>
+    .image-container {
+        width: 100%;
+        max-height: 200px;
+        overflow: hidden;
+    }
 
-<div class="container">
-    <div class="row">
-        @foreach (var post in Model)
-        {
-            <div class="col-md-4 d-flex align-items-stretch">
-                   
-                    <div class="card mb-4 ">
+    .image-container img {
+        width: 100%;
+        height: auto;
+    }
+    
+
+  
+</style>
+
+<div class="box">
+   
+
+    <div class="container">
+        <div class="row">
+            @foreach (var post in Model.Reverse())
+            {
+                var (imageHtml, truncatedContent) = ExtractAndTruncateHtml(post.Content, 200);
+
+                <div class="col-md-4 d-flex align-items-stretch">
+                    <div class="card mb-4">
                         <div class="kart">
-                    <div class="card-body d-flex flex-column">
-                        <h5 class="card-title">@post.Title</h5>
-                        <div class="card-text flex-grow-1">
-                            @Html.Raw(TruncateHtml(post.Content, 200))
+                            <!-- Kartın üst kısmında resim için yeni div -->
+                            <div class="image-container">
+                                @Html.Raw(imageHtml)
+                            </div>
+                            <div class="card-body d-flex flex-column">
+                                <p>@post.Author - @post.CreatedAt.ToString("yyyy-MM-dd")</p>
+
+                                <h5 class="card-title">@post.Title</h5>
+                                <!-- İçeriğin bulunduğu div -->
+                                <div class="card-text flex-grow-1">
+                                    @Html.Raw(truncatedContent.TrimStart())
+                                </div>
+                                
+                                <a href="@Url.Action("Details", "User", new { id = post.Id })" class="btn btn-dark">Devamını Oku</a>
+                                
+                            </div>
                         </div>
-                        <a href="@Url.Action("Details", "User", new { id = post.Id })" class="btn btn-primary">Devamını Oku</a>
                     </div>
                 </div>
-                </div>
-            </div>
-        }
+            }
+        </div>
     </div>
 </div>
 
 @functions {
-    public static string TruncateHtml(string input, int length)
+    public static (string, string) ExtractAndTruncateHtml(string input, int length)
     {
-        // Close any open tags properly
-        if (input.Length <= length)
+        if (string.IsNullOrEmpty(input))
         {
-            return input;
+            return (string.Empty, string.Empty);
         }
 
-        var truncated = input.Substring(0, length);
+        var doc = new HtmlAgilityPack.HtmlDocument();
+        doc.LoadHtml(input);
 
-        var lastOpeningTagIndex = truncated.LastIndexOf('<');
-        var lastClosingTagIndex = truncated.LastIndexOf('>');
+        var firstImage = doc.DocumentNode.SelectSingleNode("//img");
+        string imageHtml = firstImage?.OuterHtml ?? string.Empty;
 
-        if (lastOpeningTagIndex > lastClosingTagIndex)
+        if (firstImage != null)
         {
-            var closingTagIndex = input.IndexOf('>', lastOpeningTagIndex);
-            if (closingTagIndex != -1)
+            firstImage.Remove();
+        }
+
+        string truncatedContent = doc.DocumentNode.OuterHtml;
+
+        if (truncatedContent.Length > length)
+        {
+            truncatedContent = truncatedContent.Substring(0, length);
+            int lastOpeningTagIndex = truncatedContent.LastIndexOf('<');
+            int lastClosingTagIndex = truncatedContent.LastIndexOf('>');
+
+            if (lastOpeningTagIndex > lastClosingTagIndex)
             {
-                truncated = input.Substring(0, closingTagIndex + 1);
+                int closingTagIndex = input.IndexOf('>', lastOpeningTagIndex);
+                if (closingTagIndex != -1)
+                {
+                    truncatedContent = input.Substring(0, closingTagIndex + 1);
+                }
             }
+
+            truncatedContent += "...";
         }
 
-        return truncated + "...";
+        return (imageHtml, truncatedContent);
     }
 }
-</div>
-

@@ -7,8 +7,6 @@ namespace MyBlog.Models
 {
     public class BlogPostCommentsViewModel
     {
-        public BlogPost BlogPost { get; set; }
-        public IPagedList<Comment> PagedComments { get; set; }
-       
+        public BlogPost BlogPost { get; set; }       
     }
 }

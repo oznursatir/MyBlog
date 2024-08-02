@@ -2,22 +2,59 @@
 @{
     ViewData["Title"] = "Home Page";
 }
+<link rel="stylesheet" href="~/css/StyleSheet.css" />
 <!-- Font Awesome -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
 <!-- Bootstrap -->
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 <!-- Css -->
-<link rel="stylesheet" href="~/css/StyleSheet.css" />
-<link rel="stylesheet" href="~/css/site.css" />
 
+<style>
+    /* Yuvarlatılmış köşeler */
+    .mySlides img {
+        vertical-align: middle;
+        border-radius: 300px !important;
+        box-shadow: 0 0 25px #000 !important;
+    }
 
+    h2, h3 {
+        text-align: center !important;
+    }
+    
+    .mySlides{
+        margin-top: 20px;
+        margin-bottom:0px;
+
+    }
+    .finish {
+        margin-bottom:40px;
+    }
+
+    .text {
+        color: black;
+        font-size: 14px;
+        
+        padding: 4px 6px;
+        position: absolute; /* Kullanabilirsiniz, konumu düzenler */
+        left: 20%;
+        
+        bottom: 8px;
+        width: 60%;
+        text-align: center;
+        background-color: rgba(211, 211, 211, 0.7);
+        border-block: solid;
+        border-color: black;
+        border-radius: 100px;
+      
+    }
+</style>
 
 <body>
 
 <div class="slideshow-container">
 
 <div class="mySlides fade">
-  <div class="numbertext">1 / 4</div>
+  <div class="numbertext">1 / 5</div>
   <img src="~/images/tanitim/th.jpg" style="width:100%">
             <div class="text" >
                 <h2>Hayata Yeni Bir Perspektiften Bakın</h2>
@@ -26,7 +63,7 @@
 </div>
 
 <div class="mySlides fade">
-  <div class="numbertext">2 / 4</div>
+  <div class="numbertext">2 / 5</div>
   <img src="~/images/tanitim/zeka.jpg" style="width:100%">
             <div class="text">
                 <h2>Blogumuzda neler bulabilirsiniz?</h2>
@@ -36,8 +73,8 @@
 </div>
 
 <div class="mySlides fade">
-  <div class="numbertext">3 / 4</div>
-  <img src="~/images/tanitim/register.jpg" style="width:100%">
+  <div class="numbertext">3 / 5</div>
+  <img src="~/images/tanitim/soru-isareti.jpg" style="width:100%">
             <div class="text">
                 <h2>Neden Kayıt Olmalısınız?</h2>
                 <p>
@@ -47,17 +84,25 @@
                 <br />
                 •İlham Verici Hikayeler: İlham almak ve yeni fikirler keşfetmek için.
                 </p>
-                <h3 style="color:black">
-                    <a href="https://localhost:44371/Identity/Account/Register">Şimdi Kayıt Ol</a>
-                </h3>
                 
-
-                Blogumuza üye olarak, özel içeriklere erişim sağlayabilir ve haftalık bültenlerimizden faydalanabilirsiniz. Sadece birkaç dakika içinde üye olabilir ve bu ayrıcalıklardan yararlanmaya başlayabilirsiniz.
             </div>
 </div>
 
         <div class="mySlides fade">
-            <div class="numbertext">4 / 4</div>
+            <div class="numbertext">4 / 5 </div>
+            <img src="~/images/tanitim/register.jpg" style="width:100%">
+            <div class="text">
+                <h3 style="color:black">
+                    <a href="https://localhost:44371/Identity/Account/Register">Şimdi Kayıt Ol</a>
+                </h3>
+
+
+                Blogumuza üye olarak, özel içeriklere erişim sağlayabilir ve haftalık bültenlerimizden faydalanabilirsiniz. Sadece birkaç dakika içinde üye olabilir ve bu ayrıcalıklardan yararlanmaya başlayabilirsiniz.
+            </div>
+        </div>
+
+        <div class="mySlides fade">
+            <div class="numbertext">5 / 5</div>
             <img src="~/images/tanitim/services-7.jpg" style="width:100%">
             <div class="text">
                 <h2>Bizi Takip Edin En Güncel İçeriklere Anında Erişin</h2>
@@ -79,10 +124,11 @@
 </div>
 <br>
 
-<div style="text-align:center">
+<div class="finish"  style="text-align:center">
   <span class="dot" onclick="currentSlide(1)"></span> 
   <span class="dot" onclick="currentSlide(2)"></span> 
   <span class="dot" onclick="currentSlide(3)"></span>
+  <span class="dot" onclick="currentSlide(4)"></span>
   <span class="dot" onclick="currentSlide(4)"></span>
     </div>
 

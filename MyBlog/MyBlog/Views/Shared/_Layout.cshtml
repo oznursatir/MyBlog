@@ -4,109 +4,129 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - MyBlog</title>
+    <link rel='stylesheet' href='~/Template/css/woocommerce-layout.css' type='text/css' media='all' />
+    <link rel='stylesheet' href='~/Template/css/woocommerce-smallscreen.css' type='text/css' media='only screen and (max-width: 768px)' />
+    <link rel='stylesheet' href='~/Template/css/woocommerce.css' type='text/css' media='all' />
+    <link rel='stylesheet' href='~/Template/css/font-awesome.min.css' type='text/css' media='all' />
+    <link rel='stylesheet' href='~/Template/style.css' type='text/css' media='all' />
+    <link rel='stylesheet' href='https://fonts.googleapis.com/css?family=Oswald:400,500,700%7CRoboto:400,500,700%7CHerr+Von+Muellerhoff:400,500,700%7CQuattrocento+Sans:400,500,700' type='text/css' media='all' />
+    <link rel='stylesheet' href='~/Template/css/easy-responsive-shortcodes.css' type='text/css' media='all' />
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/MyBlog.styles.css" asp-append-version="true" />
+ 
 </head>
-<body>
-    
-    <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">MyBlog</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Ana Sayfa</a>
-                        </li>
-                        
-                        @if (User.IsInRole("Admin") || User.IsInRole("Editor") || User.IsInRole("User"))
-                        {
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Profile" asp-action="Index">Profil</a>
-                        </li>
+<style>
+    .site-title{
+        margin:0px;
+    }
 
-                        
-                            <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="User" asp-action="Index">İçerik</a>
-                            </li>
+    .site-header {
+        margin: 0px;
+    }
+</style>
 
-
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="User" asp-action="MyComments">Yorumlarım</a>
-                            </li>
-                        }
-
-                        @if (User.IsInRole("Admin") || User.IsInRole("Editor"))
-                        {
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Editor" asp-action="Create">Yazı Oluştur</a>
-                            </li>
-
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Editor" asp-action="Index">Bloglarım</a>
-                            </li>
-                        }
-
-                        @if (User.IsInRole("Admin"))
-                        {
-                            <li class="naw-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Admin" asp-action="Index">Yönetim</a>
-                            </li>
-                        }
-
-                        
-                    </ul>
-                    @if (User.IsInRole("Admin") || User.IsInRole("Editor") || User.IsInRole("User"))
-                    {
-                        <!-- Arama çubuğu başlangıcı -->
-                        <form asp-controller="User" asp-action="Search" method="get" class="form-inline my-2 my-lg-0">
-                            <input class="form-control mr-sm-2" type="search" placeholder="Başlık veya Yazar Ara" aria-label="Ara" name="SearchTerm">
-                            <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Ara</button>
-                        </form>
-                        <!-- Arama çubuğu bitişi -->
-                        <!-- Arama sonuçları başlangıcı -->
-                        @if (!string.IsNullOrEmpty(ViewBag.SearchTerm))
-                        {
-                            <div class="search-results">
-                                <h4>Arama Sonuçları</h4>
-                                <ul>
-                                    @foreach (var post in ViewBag.SearchResults)
-                                    {
-                                        <li>
-                                            <a href="@Url.Action("Details", "User", new { id = post.Id })">@post.Title</a>
-                                        </li>
-                                    }
-                                </ul>
-                            </div>
-                        }
-                        <!-- Arama sonuçları bitişi -->
-                    }
-                    <partial name="_LoginPartial" />
+<body class="home page page-template page-template-template-portfolio page-template-template-portfolio-php">
+    <div id="page">
+        <div class="container-fluid">
+            <header id="masthead" class="site-header">
+                <div class="site-branding">
+                    <h1 class="site-title"><a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">MyBlog</a></h1>
                 </div>
-            </div>
-        </nav>
-    </header>
-   
+                <nav id="site-navigation" class="main-navigation">
+                    <button class="menu-toggle">Menu</button>
+
+                    <div class="menu-menu-1-container" >
+
+                        <ul id="menu-menu-1" class="menu nav-menu" >
+
+                            <li> <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Ana Sayfa</a></li>
+
+                            @if (User.IsInRole("Admin") || User.IsInRole("Editor") || User.IsInRole("User"))
+                            {
+                                <li><a class="nav-link text-dark" asp-area="" asp-controller="Profile" asp-action="Index">Profil</a></li>
+                                <li><a class="nav-link text-dark" asp-area="" asp-controller="User" asp-action="Index">İçerik</a></li>
+                                <li> <a class="nav-link text-dark" asp-area="" asp-controller="User" asp-action="MyComments">Yorumlarım</a></li>
+                            }
+
+                            @if (User.IsInRole("Admin") || User.IsInRole("Editor"))
+                            {
+                                <li> <a class="nav-link text-dark" asp-area="" asp-controller="Editor" asp-action="Create">Yazı Oluştur</a></li>
+                                <li><a class="nav-link text-dark" asp-area="" asp-controller="Editor" asp-action="Index">Bloglarım</a></li>
+                            }
+
+                            @if (User.IsInRole("Admin"))
+                            {
+                                <li><a class="nav-link text-dark" asp-area="" asp-controller="Admin" asp-action="Index">Yönetim</a></li>
+                            }
+
+                            @if (User.IsInRole("Admin") || User.IsInRole("Editor") || User.IsInRole("User"))
+                            {
+                                <li>
+                                    <a class="nav-link text-dark">Ara</a>
+                                    <ul class="sub-menu">
+                                        <!-- Arama çubuğu başlangıcı -->
+                                        <form asp-controller="User" asp-action="Search" method="get" class="form-inline my-2 my-lg-0">
+                                            <input class="form-control mr-sm-2" type="search" placeholder="Başlık veya Yazar Ara" aria-label="Ara" name="SearchTerm">
+                                            <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Ara</button>
+                                        </form>
+                                        <!-- Arama çubuğu bitişi -->
+                                    </ul>
+                                </li>
+
+                                <!-- Arama sonuçları başlangıcı -->
+                                @if (!string.IsNullOrEmpty(ViewBag.SearchTerm))
+                                {
+                                    <div class="search-results">
+                                        <h4>Arama Sonuçları</h4>
+                                        <ul>
+                                            @foreach (var post in ViewBag.SearchResults)
+                                            {
+                                                <li>
+                                                    <a href="@Url.Action("Details", "User", new { id = post.Id })">@post.Title</a>
+                                                </li>
+                                            }
+                                        </ul>
+                                    </div>
+                                }
+                                <!-- Arama sonuçları bitişi -->
+                            }
+
+                            <li><a <partial name="_LoginPartial"/></a></li>
+                        </ul>
+                        
+
+                    </div>
+
+                </nav>
+
+            </header>
+        </div>
+    </div>
+
     <div class="container">
         <main role="main" class="pb-3">
             @RenderBody()
         </main>
     </div>
 
-    <footer class="border-top footer text-muted">
+    <footer id="colophon" class="site-footer">
         <div class="container">
-            &copy; 2024 - MyBlog - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+            <div class="site-info">
+                <h1 style="font-family: 'Herr Von Muellerhoff';color: #ccc;font-weight:300;text-align: center;margin-bottom:0;margin-top:0;line-height:1.4;font-size: 46px;">MyBlog</h1>
+                <a target="blank" href="user/index">&copy; MyBlog - 2024</a>
+            </div>
         </div>
     </footer>
+   
+
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- #page -->
+    @* <script src='~/Template/js/jquery.js'></script> *@
+    <script src='~/Template/js/plugins.js'></script>
+    <script src='~/Template/js/scripts.js'></script>
+    <script src='~/Template/js/masonry.pkgd.min.js'></script>
     @await RenderSectionAsync("Scripts", required: false)
 
-    
+
 </body>
 </html>

@@ -9,8 +9,21 @@
         color: white;
         text-align: center;
     }
-</style>
+   
 
+    html {
+        font-size: 100%;
+    }
+
+    .btn {
+        
+        bottom: 15px;
+        font-size: 20px;
+        border-radius: 50px;
+        
+    }
+</style>
+<body>
 <h1>@ViewData["Title"]</h1>
 <div class="row">
     <div class="col-md-12">
@@ -27,14 +40,14 @@
                     <label asp-for="Input.Password" class="form-label">Şifre</label>
                     <span asp-validation-for="Input.Password" class="text-danger"></span>
                 </div>
-                <div style="color:white;" class="checkbox mb-3">
-                    <label asp-for="Input.RememberMe" class="form-label">
-                        <input class="form-check-input" asp-for="Input.RememberMe" />
-                        @Html.DisplayNameFor(m => m.Input.RememberMe)
-                    </label>
-                </div>
+                    <div style="color:black;" class="checkbox mb-3">
+                        <label class="form-label">
+                            <input class="form-check-input" asp-for="Input.RememberMe" />
+                            Beni Hatırla
+                        </label>
+                    </div>
                 <div>
-                    <button id="login-submit" type="submit" class="w-100 btn btn-lg btn-primary">Giriş Yap</button>
+                    <button id="login-submit" type="submit" class="w-100 btn btn-lg btn-dark">Giriş Yap</button>
                 </div>
                 <div>
                     <p>
@@ -53,3 +66,4 @@
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
 }
+</body>

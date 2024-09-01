@@ -1,5 +1,4 @@
-﻿@using X.PagedList
-@model IPagedList<MyBlog.Models.Comment>
+﻿@model IEnumerable<MyBlog.Models.Comment>
 @foreach (var comment in Model)
 {
     <div class="card mb-3">
@@ -10,7 +9,7 @@
             {
                 <div class="d-flex justify-content-end">
                     <button type="button" class="btn btn-primary edit-comment" data-comment-id="@comment.Id">Düzenle</button>
-                    <form asp-action="DeleteComment" asp-controller="User" method="post" class="ml-1">
+                    <form asp-action="DeleteComment" asp-controller="BlogComments" method="post" class="ml-1">
                         <input type="hidden" name="id" value="@comment.Id" />
                         <button type="submit" class="btn btn-danger" onclick="return confirm('Yorumu silmek istediğinizden emin misiniz?')">Sil</button>
                     </form>

@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using MyBlog.Data;
 
@@ -11,9 +12,11 @@ using MyBlog.Data;
 namespace MyBlog.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240826045909_AppAuthor")]
+    partial class AppAuthor
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -187,6 +190,10 @@ namespace MyBlog.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("Author")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Content")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -198,14 +205,7 @@ namespace MyBlog.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasMaxLength(450)
-                        .HasColumnType("nvarchar(450)");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("UserId");
 
                     b.ToTable("BlogPosts");
                 });
@@ -393,17 +393,6 @@ namespace MyBlog.Data.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("MyBlog.Models.BlogPost", b =>
-                {
-                    b.HasOne("MyBlog.Models.CustomUser", "User")
-                        .WithMany("BlogPosts")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("MyBlog.Models.Comment", b =>
                 {
                     b.HasOne("MyBlog.Models.BlogPost", "BlogPost")
@@ -444,8 +433,6 @@ namespace MyBlog.Data.Migrations
 
             modelBuilder.Entity("MyBlog.Models.CustomUser", b =>
                 {
-                    b.Navigation("BlogPosts");
-
                     b.Navigation("Comments");
                 });
 #pragma warning restore 612, 618

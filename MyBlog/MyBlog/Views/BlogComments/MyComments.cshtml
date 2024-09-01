@@ -65,16 +65,16 @@
         {
             <tr>
                 <td>
-                        <a asp-controller="User" asp-action="Details" asp-route-id="@comment.BlogPost.Id">
+                        <a asp-controller="BlogComments" asp-action="Details" asp-route-id="@comment.BlogPost.Id">
                             @comment.BlogPost.Title
                         </a>
                 </td>
-                <td>@comment.BlogPost.Author</td>
+                <td>@comment.UserId</td>
                 <td>@comment.CreatedAt.ToString("dd-MM-yyyy")</td>
                 <td>@comment.Content</td>
                 <td>
                     <a class="btn btn-primary" asp-action="EditComment" asp-route-id="@comment.Id">Düzenle</a>
-                    <form asp-action="DeleteComment" method="post" style="display:inline;">
+                        <form asp-controller="BlogComments"  asp-action="DeleteComment" method="post" asp-route-id="@comment.BlogPost.Id" style="display:inline;">
                         <input type="hidden" name="id" value="@comment.Id" />
                             <input type="hidden" name="returnUrl" value="@Url.Action("MyComments")" />
                             <button type="submit" class="btn btn-danger" onclick="return confirm('Bu yorumu silmek istediğinizden emin misiniz?')">Sil</button>

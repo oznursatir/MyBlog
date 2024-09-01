@@ -43,14 +43,14 @@
                             @if (User.IsInRole("Admin") || User.IsInRole("Editor") || User.IsInRole("User"))
                             {
                                 <li><a class="nav-link text-dark" asp-area="" asp-controller="Profile" asp-action="Index">Profil</a></li>
-                                <li><a class="nav-link text-dark" asp-area="" asp-controller="User" asp-action="Index">İçerik</a></li>
-                                <li> <a class="nav-link text-dark" asp-area="" asp-controller="User" asp-action="MyComments">Yorumlarım</a></li>
+                                <li><a class="nav-link text-dark" asp-area="" asp-controller="BlogPost" asp-action="Index">İçerik</a></li>
+                                <li> <a class="nav-link text-dark" asp-area="" asp-controller="BlogComments" asp-action="MyComments">Yorumlarım</a></li>
                             }
 
                             @if (User.IsInRole("Admin") || User.IsInRole("Editor"))
                             {
-                                <li> <a class="nav-link text-dark" asp-area="" asp-controller="Editor" asp-action="Create">Yazı Oluştur</a></li>
-                                <li><a class="nav-link text-dark" asp-area="" asp-controller="Editor" asp-action="Index">Bloglarım</a></li>
+                                <li> <a class="nav-link text-dark" asp-area="" asp-controller="BlogPost" asp-action="Create">Yazı Oluştur</a></li>
+                                <li><a class="nav-link text-dark" asp-area="" asp-controller="BlogPost" asp-action="Read">Bloglarım</a></li>
                             }
 
                             @if (User.IsInRole("Admin"))

@@ -26,6 +26,7 @@ namespace MyBlog.Data
                 .HasOne(c => c.User)
                 .WithMany(u => u.Comments)
                 .HasForeignKey(c => c.UserId);
+            builder.Entity<BlogPost>().HasOne(c => c.User).WithMany(w => w.BlogPosts).HasForeignKey(h => h.UserId).HasPrincipalKey(h => h.Id).OnDelete(DeleteBehavior.NoAction);
             base.OnModelCreating(builder);
 
             builder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());

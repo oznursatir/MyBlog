@@ -6,7 +6,6 @@ namespace MyBlog.Models
 {
     public class CustomUser : IdentityUser
     {
-       
 
         [Display(Name = "Adı & Soyadı")]
         public string FullName { get; set; }
@@ -23,6 +22,7 @@ namespace MyBlog.Models
         public string? ProfilePictureUrl { get; set; }
 
         public ICollection<Comment> Comments { get; set; } = new List<Comment>();
-        
+        public ICollection<BlogPost> BlogPosts { get; set; } = new List<BlogPost>();
+
     }
 }

@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace MyBlog.Models
+﻿namespace MyBlog.Models
 {
     public class Comment
     {
@@ -14,7 +12,7 @@ namespace MyBlog.Models
 
         // İlişkiler
         public BlogPost BlogPost { get; set; }
-        public CustomUser User { get; set; }
+        public CustomUser? User { get; set; }
         public List<EditComment> Comments { get; set; }
     }
 }

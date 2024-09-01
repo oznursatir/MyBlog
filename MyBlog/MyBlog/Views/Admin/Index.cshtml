@@ -82,7 +82,7 @@
                     "url": "https://cdn.datatables.net/plug-ins/2.0.8/i18n/tr.json"
                 },
                 "ajax": {
-                    "url": "/Admin/LoadUsers",
+                    "url": "/User/LoadUsers",
                     "type": "POST",
                     "datatype": "json"
                 },
@@ -93,8 +93,8 @@
                     {
                         "data": "id",
                         "render": function (data) {
-                            return `<a href="/Admin/EditUser?userId=${data}">Edit</a> |
-                                                <a href="/Admin/DeleteUser?userId=${data}">Delete</a>`;
+                            return `<a href="/User/EditUser?userId=${data}">Edit</a> |
+                                                <a href="/User/DeleteUser?userId=${data}">Delete</a>`;
                         },
                         "orderable": false,
                         "title": "Aksiyon"
@@ -111,7 +111,7 @@
                     "url": "https://cdn.datatables.net/plug-ins/2.0.8/i18n/tr.json"
                 },
                 "ajax": {
-                    "url": "/Admin/LoadPosts",
+                    "url": "/BlogPost/LoadPosts",
                     "type": "POST",
                     "datatype": "json"
                 },
@@ -122,8 +122,8 @@
                     {
                         "data": "id",
                         "render": function (data) {
-                            return `<a href="/Admin/EditPost?id=${data}">Edit</a> |
-                                            <a href="/Admin/DeletePost?id=${data}">Delete</a>`;
+                            return `<a href="/BlogPost/Edit?id=${data}">Edit</a> |
+                                            <a href="/BlogPost/Delete?id=${data}">Delete</a>`;
                         },
                         "orderable": false,
                         "title":"Aksiyon"

@@ -1,0 +1,145 @@
+﻿@model MyBlog.Models.BlogPost
+
+@{
+    ViewData["Title"] = "Create Blog Post";
+}
+
+<!-- Font Awesome -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+<!-- Bootstrap -->
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
+<style>
+    .kutu {
+        background-color: rgba(211, 211, 211, 0.7);
+        border-radius: 60px;
+        padding: 20px;
+    }
+
+    h1 {
+        text-align: center;
+        color: white;
+    }
+
+    .row {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .button {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .btn-margin {
+        margin-top: 40px;
+    }
+
+    .bold-label {
+        font-weight: bold;
+    }
+
+</style>
+
+<div class="kutu">
+    <h1>Blog Post Oluştur</h1>
+
+
+    <div class="row">
+        <div class="col-md-8">
+            <form asp-action="Create" method="post" id="createForm">
+
+                <div class="form-group">
+                    <label asp-for="Title" class="control-label bold-label">Başlık</label>
+                    <input asp-for="Title" class="form-control" />
+                    <span asp-validation-for="Title" class="text-danger"></span>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="Content" class="control-label bold-label">İçerik</label>
+                    <textarea asp-for="Content" class="form-control" id="Content"></textarea>
+                    <span asp-validation-for="Content" class="text-danger"></span>
+                </div>
+
+                <input type="hidden" asp-for="UserId" value="@User.Identity?.Name" />
+                <div class="button">
+                    <div class="form-group">
+                        <input type="submit" value="Oluştur" class="btn btn-primary btn-margin" />
+                    </div>
+                </div>
+
+            </form>
+        </div>
+    </div>
+
+    @section Scripts {
+        <script src="https://cdn.ckeditor.com/ckeditor5/36.0.1/classic/ckeditor.js"></script>
+
+        <script>
+            class MyUploadAdapter {
+                constructor(loader) {
+                    this.loader = loader;
+                }
+
+                upload() {
+                    return this.loader.file
+                        .then(file => new Promise((resolve, reject) => {
+                            const data = new FormData();
+                            data.append('upload', file);
+
+                            fetch('/BlogPost/UploadImage', {
+                                method: 'POST',
+                                body: data
+                            })
+                                .then(response => response.json())
+                                .then(result => {
+                                    if (result.url) {
+                                        resolve({
+                                            default: result.url
+                                        });
+                                    } else {
+                                        reject(result.message);
+                                    }
+                                })
+                                .catch(error => {
+                                    reject(error.message);
+                                });
+                        }));
+                }
+
+                abort() {
+                    // Bu kısımda isteği iptal etme işlemi gerçekleştirilebilir
+                }
+            }
+
+            function MyUploadAdapterPlugin(editor) {
+                editor.plugins.get('FileRepository').createUploadAdapter = (loader) => {
+                    return new MyUploadAdapter(loader);
+                };
+            }
+
+            ClassicEditor
+                .create(document.querySelector('#Content'), {
+                    extraPlugins: [MyUploadAdapterPlugin]
+                })
+                .then(editor => {
+                    window.editor = editor;
+                })
+                .catch(error => {
+                    console.error(error);
+                });
+
+            document.getElementById('createForm').addEventListener('submit', function (event) {
+                document.querySelector('#Content').value = window.editor.getData();
+            });
+        </script>
+
+        @{
+            await Html.RenderPartialAsync("_ValidationScriptsPartial");
+        }
+    }
+
+
+</div>

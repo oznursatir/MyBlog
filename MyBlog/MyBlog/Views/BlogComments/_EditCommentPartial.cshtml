@@ -1,6 +1,6 @@
 ﻿@model MyBlog.Models.EditComment
 
-<form id="editCommentForm" asp-action="EditCommentDetails" asp-controller="User" method="post">
+<form id="editCommentForm" asp-action="EditCommentDetails" asp-controller="BlogComments" method="post">
     @Html.AntiForgeryToken()
     <input type="hidden" name="Id" value="@Model.Id" />
     <input type="hidden" name="CommentId" value="@Model.CommentId" />

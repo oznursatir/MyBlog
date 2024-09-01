@@ -1,0 +1,9 @@
+﻿@model CustomUser
+
+<h2>Kullanıcı Sil</h2>
+<p>@Model.UserName kullanıcısını silmek istediğinizden emin misiniz?</p>
+
+<form asp-action="DeleteUser" asp-route-userId="@Model.Id" method="post">
+    <button type="submit" class="btn btn-danger">Sil</button>
+    <a asp-action="Admin/Index" class="btn btn-secondary">İptal</a>
+</form>

@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query;
 using MyBlog.Data;
@@ -13,7 +14,7 @@ using X.PagedList;
 
 namespace MyBlog.Controllers
 {
-    [Authorize(Roles = "Admin, Editor, User")]
+    [Authorize(Roles = "Admin ")]
     public class UserController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -25,280 +26,176 @@ namespace MyBlog.Controllers
         }
         public async Task<IActionResult> Index()
         {
-            var contents = await _context.BlogPosts.ToListAsync();
-            return View(contents);
-        }
-
-        public async Task<IActionResult> Search(string searchTerm)
-        {
-            var model = new List<BlogPost>();
-
-            if (!string.IsNullOrEmpty(searchTerm))
-            {
-                model = await _context.BlogPosts
-                    .Where(b => b.Title.Contains(searchTerm) || b.Author.Contains(searchTerm))
-                    .ToListAsync();
-            }
-            else
-            {
-                model = await _context.BlogPosts.ToListAsync();
-            }
-
-            return View("Index", model);
-        }
-
-        public async Task<IActionResult> Details(int id)
-        {
-            var content = await _context.BlogPosts.FirstOrDefaultAsync(b => b.Id == id);
-
-            if (content == null)
-            {
-                return NotFound();
-            }
-
-            var viewModel = new BlogPostCommentsViewModel
-            {
-                BlogPost = content,
-            };
-
-            return View(viewModel);
-        }
-
-        public async Task<IActionResult> GetComments(int blogId,int page)
-        {
-            var comments = _context.Comments.Where(w => w.BlogPostId == blogId).OrderByDescending(c => c.CreatedAt).Skip((page-1)*5).Take(5).Include(i=>i.User).ToPagedList();
-            return PartialView("_CommentsPartial", comments);
-        }
-
-        [HttpPost]
-
-        public async Task<IActionResult> AddComment(string content, int postId)
-        {
-            if (string.IsNullOrWhiteSpace(content))
-            {
-                return Json(new { success = false, message = "Yorum içeriği boş olamaz." });
-            }
-
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-            var comment = new Models.Comment
-            {
-                Content = content,
-                BlogPostId = postId,
-                UserId = userId,
-                CreatedAt = DateTime.Now
-            };
-
-            _context.Comments.Add(comment);
-            await _context.SaveChangesAsync();
-
-            return RedirectToAction("Details", new { id = postId });
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> DeleteComment(int id, string returnUrl = null)
-        {
-            var comment = await _context.Comments.FindAsync(id);
-
-            if (comment == null)
-            {
-                return NotFound();
-            }
-
-            // Sadece mevcut kullanıcı kendi yorumunu silebilir
-            var currentUser = await _userManager.GetUserAsync(User);
-            var isAdmin = User.IsInRole("Admin");
-            if (comment.UserId != currentUser.Id && !isAdmin)
-            {
-                return Forbid(); // 403 Forbidden döndür
-            }
-
-            _context.Comments.Remove(comment);
-            await _context.SaveChangesAsync();
-
-            if (!string.IsNullOrEmpty(returnUrl))
-            {
-                return Redirect(returnUrl);
-            }
-
-            return RedirectToAction("Details", new { id = comment.BlogPostId }); // yorumun bağlı olduğu gönderiye geri dön
-        }
-
-        public IActionResult Privacy()
-        {
             return View();
         }
 
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
+
+        [HttpPost]
+        public async Task<IActionResult> LoadUsers()
         {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
-        }
+            var draw = HttpContext.Request.Form["draw"].FirstOrDefault();
+            var start = Request.Form["start"].FirstOrDefault();
+            var length = Request.Form["length"].FirstOrDefault();
+            var searchValue = Request.Form["search[value]"].FirstOrDefault();
+            var sortColumn = Request.Form["columns[" + Request.Form["order[0][column]"].FirstOrDefault() + "][data]"].FirstOrDefault();
+            var sortColumnDirection = Request.Form["order[0][dir]"].FirstOrDefault();
 
-        [HttpGet]
-        public async Task<IActionResult> MyComments()
-        {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var users = _userManager.Users.AsQueryable();
 
-            var comments = await _context.Comments
-                .Include(c => c.BlogPost)
-                .Where(c => c.UserId == userId)
-                .ToListAsync();
-
-
-            return View(comments);
-        }
-
-
-        [HttpGet]
-        public async Task<IActionResult> EditComment(int? id)
-        {
-            if (id == null)
+            if (!string.IsNullOrEmpty(searchValue))
             {
-                return NotFound();
+                var normalizedSearch = searchValue.ToLower().Replace(" ", "");
+                users = users.Where(u => u.UserName.ToLower().Contains(normalizedSearch) ||
+                                         u.Email.ToLower().Contains(normalizedSearch) ||
+                                         u.FullName.ToLower().Contains(normalizedSearch));
             }
 
-            var comment = await _context.Comments.FindAsync(id);
-            if (comment == null)
+            var totalRecords = await users.CountAsync();
+            var userData = await users.Skip(int.Parse(start)).Take(int.Parse(length)).ToListAsync();
+
+            var roles = new List<string>();
+            foreach (var user in userData)
             {
-                return NotFound();
+                roles.Add(string.Join(", ", await _userManager.GetRolesAsync(user)));
             }
 
-            var currentUser = await _userManager.GetUserAsync(User);
-            var isAdmin = User.IsInRole("Admin");
-            if (comment.UserId != currentUser.Id && !isAdmin)
+            var jsonData = new
             {
-                return Forbid();
-            }
-
-            var editComment = new EditComment
-            {
-                Id = comment.Id,
-                CommentId = comment.Id,
-                Text = comment.Content,
-                
+                draw = draw,
+                recordsFiltered = totalRecords,
+                recordsTotal = totalRecords,
+                data = userData.Select((u, i) => new {
+                    u.UserName,
+                    u.Email,
+                    Roles = roles[i],
+                    u.Id
+                }).ToList()
             };
 
-            return View(editComment);
+            return Ok(jsonData);
+        }
+
+
+
+        [HttpGet]
+        public IActionResult EditUser(string userId)
+        {
+            // Kullanıcıyı bul
+            var cUser = _context.Users.Find(userId);
+
+            // Kullanıcı bulunamazsa hata dön
+            if (cUser == null)
+            {
+                ModelState.AddModelError("404", "Kullanıcı Bulunamadı");
+            }
+            EditUserModel user = new EditUserModel
+            {
+                Id = cUser.Id,
+                DateOfBirth = cUser.DateOfBirth,
+                Email = cUser.Email,
+                FullName = cUser.FullName,
+                Gender = cUser.Gender
+            };
+            user.Role = _userManager.GetRolesAsync(cUser).Result.FirstOrDefault();
+            var allRoles = _context.Roles.Select(s => new SelectListItem
+            {
+                Selected = s.Name.Equals(user.Role),
+                Text = s.Name,
+                Value = s.Name
+            }).ToList();
+
+            return View(new EditUserPageModel { User = user, AllRoles = allRoles });
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EditComment(int id, EditComment editComment)
+        public async Task<IActionResult> EditUserAsync(EditUserModel user)
         {
-            if (id != editComment.Id)
+            if (!ModelState.IsValid)
             {
-                return NotFound();
+                ModelState.AddModelError("402", "Kayıt İletilemedi");
+                //new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier }
+                return View();
             }
 
-            if (ModelState.IsValid)
+            var cUser = _context.Users.Find(user.Id);
+
+            if (cUser == null)
             {
-                try
-                {
-                    var comment = await _context.Comments.FindAsync(editComment.CommentId);
-                    if (comment == null)
-                    {
-                        return NotFound();
-                    }
-
-                    comment.Content = editComment.Text;
-
-                    _context.Update(comment);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!CommentExists(editComment.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(MyComments));
+                ModelState.AddModelError("404", "Kullanıcı Bulunamadı");
+                //new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier }
+                return View();
             }
-            return View(editComment);
+
+            cUser.FullName = user.FullName;
+            cUser.Email = user.Email;
+            cUser.Gender = user.Gender;
+            cUser.DateOfBirth = user.DateOfBirth;
+            _context.Update(cUser);
+            await _context.SaveChangesAsync();
+
+            // Yeni rolü ayarla
+            // Kullanıcının rollerini değiştir
+            var userOldRoles = _userManager.GetRolesAsync(cUser).Result;
+            foreach (var oldRole in userOldRoles)
+            {
+                await _userManager.RemoveFromRoleAsync(cUser, oldRole);
+            }
+
+            var result = await _userManager.AddToRoleAsync(cUser, user.Role);
+            if (result.Succeeded)
+            {
+                return RedirectToAction("EditUser", new { userId = cUser.Id });
+                // Değişikliği veritabanına kaydet
+                // Başarılı bir şekilde rol değiştirildi
+            }
+            else
+            {
+                ModelState.AddModelError("404", "Rol değiştirilemedi.");
+                return View("Error");
+            }
+
+
         }
-
+        //Kullanıcıyı silme
         [HttpGet]
-        public async Task<IActionResult> EditCommentDetails(int? id)
+        public async Task<IActionResult> DeleteUser(string userId)
         {
-            if (id == null)
+            if (string.IsNullOrEmpty(userId))
             {
                 return NotFound();
             }
 
-            var comment = await _context.Comments.FindAsync(id);
-            if (comment == null)
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
             {
                 return NotFound();
             }
 
-            var currentUser = await _userManager.GetUserAsync(User);
-            var isAdmin = User.IsInRole("Admin");
-            if (comment.UserId != currentUser.Id && !isAdmin)
-            {
-                return Forbid();
-            }
-
-            var editComment = new EditComment
-            {
-                Id = comment.Id,
-                CommentId = comment.Id,
-                Text = comment.Content,
-
-            };
-            return PartialView(editComment);
+            return View(user);
         }
 
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EditCommentDetails(int id, EditComment editComment)
+        [HttpPost, ActionName("DeleteUser")]
+
+        public async Task<IActionResult> DeleteUserConfirmed(string userId)
         {
-            if (id != editComment.Id)
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
             {
                 return NotFound();
             }
 
-            if (ModelState.IsValid)
+            var result = await _userManager.DeleteAsync(user);
+            if (!result.Succeeded)
             {
-                try
-                {
-                    var comment = await _context.Comments.FindAsync(editComment.CommentId);
-                    if (comment == null)
-                    {
-                        return NotFound();
-                    }
-
-                    comment.Content = editComment.Text;
-
-                    _context.Update(comment);
-                    await _context.SaveChangesAsync();
-
-                    return Json(new { success = true, postId = comment.BlogPostId });
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!CommentExists(editComment.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                
+                // Silme işlemi başarısız olursa yapılacak işlemler
+                return View("Error");
             }
 
-            return PartialView(editComment);
+            return RedirectToAction("Index", "Admin");
         }
 
-        private bool CommentExists(int id)
-        {
-            return _context.Comments.Any(e => e.Id == id);
-        }
+
+
+
     }
 }

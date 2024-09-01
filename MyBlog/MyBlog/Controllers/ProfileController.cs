@@ -13,7 +13,7 @@ namespace MyBlog.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly UserManager<CustomUser> _userManager;
-        
+
 
         public ProfileController(ApplicationDbContext context, UserManager<CustomUser> userManager)
         {
@@ -29,7 +29,7 @@ namespace MyBlog.Controllers
                 return NotFound("Kullanıcı Bulunamadı");
             }
 
-            var blogPosts = await _context.BlogPosts.Where(bp => bp.Author == user.FullName).ToListAsync();
+            var blogPosts = await _context.BlogPosts.Where(bp => bp.UserId == user.FullName).ToListAsync();
 
             var viewModel = new ProfileViewModel
             {
@@ -93,13 +93,13 @@ namespace MyBlog.Controllers
             cUser.Gender = Model.Gender;
             cUser.DateOfBirth = Model.DateOfBirth;
             cUser.UserName = Model.Username;
-           
+
 
 
             if (Model.ProfilePicture != null)
             {
                 var filePath = Path.Combine(@"wwwroot/images/profiles", Model.ProfilePicture.FileName);
-                
+
                 var directory = Path.GetDirectoryName(filePath);
                 if (Directory.Exists(directory))
                 {
@@ -108,7 +108,7 @@ namespace MyBlog.Controllers
                 using (var stream = new FileStream(filePath, FileMode.Create))
                 {
                     await Model.ProfilePicture.CopyToAsync(stream);
-                    
+
                 }
                 cUser.ProfilePictureUrl = $"/images/profiles/{Model.ProfilePicture.FileName}";
             }
@@ -117,9 +117,9 @@ namespace MyBlog.Controllers
             if (result.Succeeded)
             {
                 return RedirectToAction("Index");
-                
+
             }
-                
+
 
             foreach (var error in result.Errors)
             {
@@ -127,7 +127,7 @@ namespace MyBlog.Controllers
             }
 
             return View(User);
-            }
+        }
 
         //Parola Değiştirme
         [HttpGet]
@@ -175,7 +175,3 @@ namespace MyBlog.Controllers
 
     }
 }
-
-
-
-

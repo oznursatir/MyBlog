@@ -122,7 +122,7 @@ namespace MyBlog.Areas.Identity.Pages.Account
                     }
                     else if (User.IsInRole("Editor"))
                     {
-                        return LocalRedirect("/Editor/Index");
+                        return LocalRedirect("/BlogPost/Read");
                     }
                     else if (User.IsInRole("User"))
                     {

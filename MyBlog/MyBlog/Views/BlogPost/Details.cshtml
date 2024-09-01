@@ -1,10 +1,8 @@
-﻿<!--USER DETAY-->
-@using X.PagedList
-@using X.PagedList.Mvc.Core
-@model MyBlog.Models.BlogPostCommentsViewModel
+﻿<!--POST DETAY-->
+@model MyBlog.Models.BlogPost
 
 @{
-    ViewData["Title"] = Model.BlogPost.Title;
+    ViewData["Title"] = Model.Title;
 }
 <link rel="stylesheet" href="~/css/GeneralStyle.css" />
 <!-- Font Awesome -->
@@ -39,23 +37,23 @@
 </style>
 
 <div class="box">
-    <h1>@Model.BlogPost.Title</h1>
-    <p>@Model.BlogPost.Author - @Model.BlogPost.CreatedAt.ToString("yyyy-MM-dd")</p>
+    <h1>@Model.Title</h1>
+    <p>@Model.User.- @Model.CreatedAt.ToString("yyyy-MM-dd")</p>
 
     <div>
-        @Html.Raw(Model.BlogPost.Content) <!-- CKEditor içeriğini doğru şekilde render eder -->
+        @Html.Raw(Model.Content) <!-- CKEditor içeriğini doğru şekilde render eder -->
     </div>
 </div>
 <hr />
 <div class="yorum">
     <div class="box">
-        <form id="commentForm" asp-action="AddComment" asp-controller="User">
+        <form id="commentForm" asp-action="AddComment" asp-controller="BlogComments">
             <div class="form-group">
                 <h2>Yorumunuz:</h2>
                 <label for="commentContent"></label>
                 <textarea class="form-control" id="commentContent" name="content" rows="3"></textarea>
             </div>
-            <input type="hidden" name="postId" value="@Model.BlogPost.Id" />
+            <input type="hidden" name="postId" value="@Model.Id" />
             @Html.AntiForgeryToken() <!-- CSRF koruma token'ı -->
             <div class="button">
                 <button type="submit" class="btn btn-primary btn-margin">Yorum Yap</button>
@@ -68,60 +66,83 @@
         <h2>Yorumlar</h2>
         <br />
         <div id="commentsContainer">
-            @Html.Partial("_CommentsPartial", Model.PagedComments)
+            @await Html.PartialAsync("~/Views/BlogComments/_CommentsPartial.cshtml", Model.Comments)
+
         </div>
 
-        @if (Model.PagedComments.HasNextPage)
-        {
+        
             <div class="button">
-                <button id="loadMoreComments" class="btn btn-secondary btn-margin" data-page="2" data-post-id="@Model.BlogPost.Id">Daha Fazla Yükle</button>
+                <button id="loadMoreComments" class="btn btn-secondary btn-margin" data-page="1" data-post-id="@Model.Id">Daha Fazla Yükle</button>
             </div>
-        }
+        
     </div>
 </div>
 
 @section Scripts {
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <script>
-        $(document).ready(function () {
-            $('#loadMoreComments').click(function () {
-                var button = $(this);
-                var page = button.data('page');
-                var postId = button.data('post-id');
-
-                $.get('@Url.Action("Details", "User")', { id: postId, page: page }, function (data) {
+        function GetComments() {
+            var button = $('#loadMoreComments');
+            var page = button.data('page');
+            var postId = button.data('post-id');
+            $.ajax({
+                url: '@Url.Action("GetComments", "BlogComments")',
+                type: 'GET',
+                dataType: 'html',  // Burada direkt 'html' kullanıyoruz
+                data: { blogId: postId, page: page },
+                success: function (data) {
                     $('#commentsContainer').append(data);
                     button.data('page', page + 1);
 
                     if (data.trim() === '') {
                         button.hide();
                     }
-                });
+                }
+            });
+        }
+        $(document).ready(function () {
+            GetComments();
+            // Daha Fazla Yorum Yükle
+            $('#loadMoreComments').click(function () {
+                var button = $(this);
+                var page = button.data('page');
+                var postId = button.data('post-id');
+                GetComments();
             });
 
+            // Yorum Ekle
             $('#commentForm').submit(function (e) {
                 e.preventDefault();
 
                 var form = $(this);
                 var formData = form.serialize();
 
-                $.post(form.attr('action'), formData, function (response) {
-                    if (response.success) {
-                        $('#commentsContainer').prepend(response.commentHtml);
-                        form[0].reset();
-                    } else {
-                        alert(response.message || 'Yorum eklenirken bir hata oluştu.');
+                $.ajax({
+                    url: form.attr('action'),
+                    type: 'POST',
+                    data: formData,
+                    dataType: 'json', // Gelen verinin JSON olduğunu belirtiyoruz
+                    success: function (response) {
+                        if (response.success) {
+                            // Yorum başarıyla eklendiğinde yapılacak işlemler
+                            $('#commentsContainer').prepend(response.commentHtml);
+                            location.reload(); // Sayfayı yenileyerek güncel yorumları gösterebiliriz
+                        } else {
+                            alert(response.message || 'Yorum eklenirken bir hata oluştu.');
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        console.error("AJAX request failed:", status, error);
                     }
-                }).fail(function (xhr, status, error) {
-                    console.error("AJAX request failed:", status, error);
                 });
             });
+
 
             $(document).on('click', '.edit-comment', function () {
                 var commentId = $(this).data('comment-id');
                 var cardBody = $(this).closest('.card-body');
 
-                $.get('@Url.Action("EditCommentDetails", "User")', { id: commentId }, function (data) {
+                $.get('@Url.Action("EditCommentDetails", "BlogComments")', { id: commentId }, function (data) {
                     cardBody.html(data);
                 }).fail(function (xhr, status, error) {
                     console.error("AJAX request failed:", status, error);
@@ -135,9 +156,9 @@
                 var formData = form.serialize();
                 $.post(form.attr('action'), formData, function (response) {
                     if (response.success) {
-                        // Kaydetme başarılı olduysa sayfayı yenile
                         location.reload();
-                    } else {
+                        // Kaydetme başarılı olduysa sayfayı yenile
+                      } else {
                         // Başarısız olduysa formu yeniden yükle
                         form.closest('.card-body').html(response);
                     }
@@ -146,5 +167,8 @@
                 });
             });
         });
+
+        
+        
     </script>
 }

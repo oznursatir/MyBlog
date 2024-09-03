@@ -93,8 +93,8 @@
                     {
                         "data": "id",
                         "render": function (data) {
-                            return `<a href="/User/EditUser?userId=${data}">Edit</a> |
-                                                <a href="/User/DeleteUser?userId=${data}">Delete</a>`;
+                            return `<a href="/User/EditUser?userId=${data}" class="btn btn-sm btn-primary">Düzenle</a> |
+                        <button class="btn btn-sm btn-danger" onclick="confirmDeleteUser('${data}')">Sil</button>`;
                         },
                         "orderable": false,
                         "title": "Aksiyon"
@@ -102,6 +102,28 @@
                 ]
             });
         }
+
+        function confirmDeleteUser(userId) {
+            if (confirm('Bu kullanıcıyı silmek istediğinizden emin misiniz?')) {
+                $.ajax({
+                    url: '/User/DeleteUser', // User Controller'daki DeleteUserConfirmed metoduna giden doğru URL
+                    type: 'POST', // POST isteği gönder
+                    data: { userId: userId }, // userId parametresini gönder
+                    success: function (result) {
+                        if (result.redirectTo) {
+                            window.location.href = result.redirectTo; // Başarılı olursa yönlendirme yap
+                        } else {
+                            alert('Kullanıcı silinirken bir hata oluştu: ' + result.message);
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        alert('Hata: ' + error);
+                    }
+                });
+            }
+        }
+
+
         function LoadPosts() {
             $('#postTable').DataTable({
                 "processing": true,
@@ -122,8 +144,8 @@
                     {
                         "data": "id",
                         "render": function (data) {
-                            return `<a href="/BlogPost/Edit?id=${data}">Edit</a> |
-                                            <a href="/BlogPost/Delete?id=${data}">Delete</a>`;
+                            return `<a href="/BlogPost/EditAdmin?id=${data}" class="btn btn-sm btn-primary">Düzenle</a> |
+                                   <a href="/BlogPost/DeleteAdmin?id=${data}" class="btn btn-sm btn-danger">Sil</a>`;
                         },
                         "orderable": false,
                         "title":"Aksiyon"

@@ -39,16 +39,16 @@
 
     <div>
         <h4>@Model.Title</h4>
-         @Html.Raw(Model.Content) <!-- CKEditor içeriğini doğru şekilde render eder -->
+        @Html.Raw(Model.Content) <!-- CKEditor içeriğini doğru şekilde render eder -->
     </div>
 
     <h6>Bu gönderiyi silmek istediğinizden emin misiniz?</h6>
 
-    <form asp-action="Delete" method="post">
+    <form asp-action="DeleteBlogPost" method="post">
         <div class="button">
             <input type="hidden" asp-for="Id" />
             <button type="submit" class="btn btn-danger">Sil</button>
-            <a asp-action="Admin/Index" class="btn btn-secondary">İptal Et</a>
+            <a asp-action="BlogPost/Read" class="btn btn-secondary">İptal Et</a>
         </div>
     </form>
-    </div>
+</div>

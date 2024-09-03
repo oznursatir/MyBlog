@@ -144,17 +144,14 @@ namespace MyBlog.Controllers
             var result = await _userManager.AddToRoleAsync(cUser, user.Role);
             if (result.Succeeded)
             {
-                return RedirectToAction("EditUser", new { userId = cUser.Id });
-                // Değişikliği veritabanına kaydet
-                // Başarılı bir şekilde rol değiştirildi
+                return RedirectToAction("Index", "Admin", new { userId = cUser.Id });
+               
             }
             else
             {
                 ModelState.AddModelError("404", "Rol değiştirilemedi.");
                 return View("Error");
             }
-
-
         }
         //Kullanıcıyı silme
         [HttpGet]
@@ -174,24 +171,30 @@ namespace MyBlog.Controllers
             return View(user);
         }
 
-        [HttpPost, ActionName("DeleteUser")]
-
+        [HttpPost]
+        [ActionName("DeleteUser")]
         public async Task<IActionResult> DeleteUserConfirmed(string userId)
         {
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Json(new { success = false, message = "Kullanıcı ID'si geçersiz." });
+            }
+
             var user = await _userManager.FindByIdAsync(userId);
             if (user == null)
             {
-                return NotFound();
+                return Json(new { success = false, message = "Kullanıcı bulunamadı." });
             }
 
             var result = await _userManager.DeleteAsync(user);
             if (!result.Succeeded)
             {
-                // Silme işlemi başarısız olursa yapılacak işlemler
-                return View("Error");
+                // Silme işlemi başarısız olursa hata mesajı döndür
+                return Json(new { success = false, message = "Kullanıcı silinirken bir hata oluştu." });
             }
 
-            return RedirectToAction("Index", "Admin");
+            // İşlem başarılı olduğunda, JavaScript ile yönlendirme için JSON yanıt döndür
+            return Json(new { success = true, redirectTo = Url.Action("Index", "Admin") });
         }
 
 

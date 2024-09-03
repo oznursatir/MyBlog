@@ -191,50 +191,71 @@ namespace MyBlog.Controllers
             return BadRequest("Resim dosyası yüklenemedi.");
         }
 
+        //Ortak Post DElete(Admin/Index ve BloogPost/Read için)
+        private async Task<bool> TryDeletePostAsync(int id)
+        {
+            var post = await _context.BlogPosts.FindAsync(id);
+            if (post == null) return false;
+
+            _context.BlogPosts.Remove(post);
+            await _context.SaveChangesAsync();
+            return true;
+        }
 
 
-        // Delete (Silme) İşlemi
-        [Authorize(Roles = "Admin, Editor")]
+
+        //(Admin/Index) Post Delete İşlemi
+        [Authorize(Roles = "Admin")]
         [HttpGet]
-        public async Task<IActionResult> Delete(int id)
+        public async Task<IActionResult> DeleteAdmin(int id)
         {
             var post = await _context.BlogPosts.FindAsync(id);
             if (post == null) return NotFound();
 
-            return View(post);
+            return View("AdminDeletePost", post);
         }
 
-        [HttpPost, ActionName("Delete")]
+        [HttpPost, ActionName("DeleteAdmin")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        public async Task<IActionResult> DeleteAdminConfirmed(int id)
+        {
+            if (await TryDeletePostAsync(id))
+            {
+                return RedirectToAction("Index", "Admin");
+            }
+
+            return NotFound();
+        }
+
+        // (BlogPost/Read) Post Delete İşlemi
+        [Authorize(Roles = "Admin, Editor")]
+        [HttpGet]
+        public async Task<IActionResult> DeleteBlogPost(int id)
         {
             var post = await _context.BlogPosts.FindAsync(id);
-            _context.BlogPosts.Remove(post);
-            await _context.SaveChangesAsync();
-            return RedirectToAction("Index", "Admin");
+            if (post == null) return NotFound();
+
+            return View("ReadDeletePost", post);
         }
 
-
-        //Update(Güncelleme) İşlemi
-        [Authorize(Roles = "Admin, Editor")]
-
-        [HttpGet]
-        public async Task<IActionResult> Edit(int? id)
+        [HttpPost, ActionName("DeleteBlogPost")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteBlogPostConfirmed(int id)
         {
-            if (id == null) return NotFound();
+            if (await TryDeletePostAsync(id))
+            {
+                return RedirectToAction("Read", "BlogPost");
+            }
 
-            var blogPost = await _context.BlogPosts.FindAsync(id);
-            if (blogPost == null)
-                return NotFound();
-
-            return View(blogPost);
+            return NotFound();
         }
 
-        [HttpPost]
-        public async Task<IActionResult> Edit(int id, BlogPost blogPost)
+
+
+        //Ortak Post Edit(Admin/Index ve BloogPost/Read için)
+        private async Task<IActionResult> UpdateBlogPostAsync(int id, BlogPost blogPost, string redirectAction, string redirectController)
         {
             if (id != blogPost.Id) return NotFound();
-
 
             if (ModelState.IsValid)
             {
@@ -246,12 +267,9 @@ namespace MyBlog.Controllers
                         blogPost.UserId = user.Id;
                     }
 
-                    // CreatedAt alanını güncellemeyelim
-                    _context.Entry(blogPost).Property(x => x.CreatedAt).IsModified = false;
-
                     _context.Update(blogPost);
                     await _context.SaveChangesAsync();
-                    return RedirectToAction("Index", "Admin");
+                    return RedirectToAction(redirectAction, redirectController);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -261,6 +279,46 @@ namespace MyBlog.Controllers
                 }
             }
             return View(blogPost);
+        }
+
+        //(Admin/Index) Post Edit İşlemi
+        [Authorize(Roles = "Admin")]
+        [HttpGet]
+        public async Task<IActionResult> EditAdmin(int? id)
+        {
+            if (id == null) return NotFound();
+
+            var blogPost = await _context.BlogPosts.FindAsync(id);
+            if (blogPost == null)
+                return NotFound();
+
+            return View(blogPost);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> EditAdmin(int id, BlogPost blogPost)
+        {
+            return await UpdateBlogPostAsync(id, blogPost, "Index", "Admin");
+        }
+
+        // (BlogPost/Read) Post Edit İşlemi
+        [Authorize(Roles = "Admin, Editor")]
+        [HttpGet]
+        public async Task<IActionResult> EditBlogPost(int? id)
+        {
+            if (id == null) return NotFound();
+
+            var blogPost = await _context.BlogPosts.FindAsync(id);
+            if (blogPost == null)
+                return NotFound();
+
+            return View(blogPost);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> EditBlogPost(int id, BlogPost blogPost)
+        {
+            return await UpdateBlogPostAsync(id, blogPost, "Read", "BlogPost");
         }
 
         private bool BlogPostExists(int id)

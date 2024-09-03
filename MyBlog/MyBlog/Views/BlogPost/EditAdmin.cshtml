@@ -1,0 +1,64 @@
+﻿@model MyBlog.Models.BlogPost
+
+@{
+    ViewData["Title"] = "Edit Blog Post";
+}
+
+<link rel="stylesheet" href="~/css/GeneralStyle.css" />
+<!-- Font Awesome -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+<!-- Bootstrap -->
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
+<style>
+    .button {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+</style>
+
+<div class="box">
+    <h1>Blog Post Düzenle</h1>
+
+    <form asp-action="EditAdmin" method="post">
+        <input type="hidden" asp-for="Id" />
+        <input type="hidden" asp-for="UserId" />
+        <div class="form-group">
+            <label asp-for="Title" class="control-label">Başlık</label>
+            <input asp-for="Title" class="form-control" />
+            <span asp-validation-for="Title" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="Content" class="control-label">İçerik</label>
+            <textarea asp-for="Content" class="form-control ckeditor"></textarea> <!-- CKEditor sınıfını burada ekledik -->
+            <span asp-validation-for="Content" class="text-danger"></span>
+        </div>
+
+        <div class="button">
+
+            <div class="form-group">
+
+                <input type="submit" asp-value="Kaydet" class="btn btn-primary" />
+                <a asp-action="Index" class="btn btn-secondary">Listeye Geri Dön</a>
+            </div>
+
+
+
+
+        </div>
+    </form>
+
+
+
+    @section Scripts {
+        <script src="https://cdn.ckeditor.com/ckeditor5/36.0.1/classic/ckeditor.js"></script>
+        <script>
+            ClassicEditor
+                .create(document.querySelector('.ckeditor'))
+                .catch(error => {
+                    console.error(error);
+                });
+        </script>
+    }
+</div>

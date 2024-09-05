@@ -21,7 +21,27 @@
 
     .site-header {
         margin: 0px;
+        .search-container .search-container
     }
+
+    .search-container {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto;
+    }
+
+    #logoutForm {
+        display: flex;
+        justify-content: center; /* Yatay ortalama */
+        align-items: center; /* Dikey ortalama */
+    }
+
+    .nav-link.text-dark {
+        text-align: center; /* Metni ortalar */
+    }
+
+    
 </style>
 
 <body class="home page page-template page-template-template-portfolio page-template-template-portfolio-php">
@@ -64,10 +84,12 @@
                                     <a class="nav-link text-dark">Ara</a>
                                     <ul class="sub-menu">
                                         <!-- Arama çubuğu başlangıcı -->
-                                        <form asp-controller="User" asp-action="Search" method="get" class="form-inline my-2 my-lg-0">
-                                            <input class="form-control mr-sm-2" type="search" placeholder="Başlık veya Yazar Ara" aria-label="Ara" name="SearchTerm">
-                                            <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Ara</button>
-                                        </form>
+                                        <div class="search-container">
+                                        <form asp-controller="BlogPost" asp-action="Search" method="get" class="form-inline my-2 my-lg-0">
+                                            <input class="form-control search-input" type="search" placeholder="Başlık veya Yazar Ara" aria-label="Ara" name="SearchTerm">
+                                            
+                                            </form>
+                                        </div>
                                         <!-- Arama çubuğu bitişi -->
                                     </ul>
                                 </li>

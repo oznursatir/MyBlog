@@ -3,8 +3,6 @@
 @{
     ViewData["Title"] = "Edit Blog Post";
 }
-
-<link rel="stylesheet" href="~/css/GeneralStyle.css" />
 <!-- Font Awesome -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
 <!-- Bootstrap -->
@@ -16,49 +14,112 @@
         justify-content: center;
         align-items: center;
     }
+
+    .box{
+        min-height: 320px;
+        box-shadow: 0 0 25px rgba(0, 0, 0, 0.3);
+        border-radius: 60px;
+        padding: 20px;
+        margin-top: 40px;
+        margin-bottom: 40px;
+    }
+
+    .bold-label {
+        font-weight: bold;
+    }
+    .h2{
+        text-align:center;
+    }
 </style>
 
 <div class="box">
-    <h1>Blog Post Düzenle</h1>
+    <h2 style="text-align:center;">Blog Post Düzenle</h2>
 
     <form asp-action="EditBlogPost" method="post">
         <input type="hidden" asp-for="Id" />
         <input type="hidden" asp-for="UserId" />
+        
         <div class="form-group">
-            <label asp-for="Title" class="control-label">Başlık</label>
+            <label asp-for="Title" class="bold-label">Başlık</label>
             <input asp-for="Title" class="form-control" />
             <span asp-validation-for="Title" class="text-danger"></span>
         </div>
+        
         <div class="form-group">
-            <label asp-for="Content" class="control-label">İçerik</label>
+            <label asp-for="Content" class="bold-label">İçerik</label>
             <textarea asp-for="Content" class="form-control ckeditor"></textarea> <!-- CKEditor sınıfını burada ekledik -->
             <span asp-validation-for="Content" class="text-danger"></span>
         </div>
 
         <div class="button">
-
             <div class="form-group">
-
                 <input type="submit" asp-value="Kaydet" class="btn btn-primary" />
-                <a asp-action="Index" class="btn btn-secondary">Listeye Geri Dön</a>
+                <a asp-controller="BlogPost" asp-action="Read" class="btn btn-secondary">Listeye Geri Dön</a>
             </div>
-
-
-
-
         </div>
     </form>
-
-
-
-    @section Scripts {
-        <script src="https://cdn.ckeditor.com/ckeditor5/36.0.1/classic/ckeditor.js"></script>
-        <script>
-            ClassicEditor
-                .create(document.querySelector('.ckeditor'))
-                .catch(error => {
-                    console.error(error);
-                });
-        </script>
-    }
 </div>
+
+    @section Scripts  {
+    <script src="https://cdn.ckeditor.com/ckeditor5/36.0.1/classic/ckeditor.js"></script>
+
+    <script>
+        class MyUploadAdapter {
+            constructor(loader) {
+                this.loader = loader;
+            }
+
+            upload() {
+                return this.loader.file
+                    .then(file => new Promise((resolve, reject) => {
+                        const data = new FormData();
+                        data.append('upload', file);
+
+                        fetch('/BlogPost/UploadImage', {
+                            method: 'POST',
+                            body: data
+                        })
+                            .then(response => response.json())
+                            .then(result => {
+                                if (result.url) {
+                                    resolve({
+                                        default: result.url
+                                    });
+                                } else {
+                                    reject(result.message);
+                                }
+                            })
+                            .catch(error => {
+                                reject(error.message);
+                            });
+                    }));
+            }
+
+            abort() {
+                // Bu kısımda isteği iptal etme işlemi gerçekleştirilebilir
+            }
+        }
+
+        function MyUploadAdapterPlugin(editor) {
+            editor.plugins.get('FileRepository').createUploadAdapter = (loader) => {
+                return new MyUploadAdapter(loader);
+            };
+        }
+
+        ClassicEditor
+            .create(document.querySelector('#Content'), {
+                extraPlugins: [MyUploadAdapterPlugin]
+            })
+            .then(editor => {
+                window.editor = editor;
+            })
+            .catch(error => {
+                console.error(error);
+            });
+
+        document.getElementById('createForm').addEventListener('submit', function (event) {
+            document.querySelector('#Content').value = window.editor.getData();
+        });
+    </script>
+}
+

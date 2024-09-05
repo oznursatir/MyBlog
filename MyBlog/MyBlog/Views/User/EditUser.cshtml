@@ -12,11 +12,32 @@
         justify-content: center;
         align-items: center;
         margin-top: 15px;
+        border-radius: 50px;
+    }
+
+    .box{
+        box-shadow: 0 0 25px rgba(0, 0, 0, 0.3);
+        border-radius: 60px;
+        padding: 20px;
+        margin: 40px;
+       
+    }
+
+    .form-group {
+        margin: 20px;
+    }
+
+    .h1 {
+        color: black;
+        
+        display: block;
+        width: 100%;
+        
     }
 </style>
 
 <div class="box">
-    <h1>@Model.User.FullName Kullanıcısını Düzenle</h1>
+    <h1 style="text-align: center;">@Model.User.FullName Kullanıcısını Düzenle</h1>
 
     <form asp-action="EditUser" method="post">
         <input type="hidden" asp-for="User.Id" enctypr="multipart/form-data"/>
@@ -62,7 +83,7 @@
         </div>
        
         <div class ="button">
-        <button  type="submit">Kaydet</button>
+            <button type="submit" style="border-radius: 50px;">Kaydet</button>
         </div>
 
 

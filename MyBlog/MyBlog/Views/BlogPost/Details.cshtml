@@ -20,6 +20,11 @@
     .yorum {
         box-shadow: 0 0 25px rgba(0, 0, 0, 0.3);
         border-radius: 60px;
+        margin: 30px;
+    }
+
+    .h2 {
+        text-align:center;
     }
 
     .box {
@@ -49,7 +54,7 @@
     <div class="box">
         <form id="commentForm" asp-action="AddComment" asp-controller="BlogComments">
             <div class="form-group">
-                <h2>Yorumunuz:</h2>
+                <h2 style="text-align:center;">Yorumunuz:</h2>
                 <label for="commentContent"></label>
                 <textarea class="form-control" id="commentContent" name="content" rows="3"></textarea>
             </div>
@@ -63,7 +68,7 @@
 </div>
 <div class="yorum">
     <div class="box">
-        <h2>Yorumlar</h2>
+        <h2 style="text-align:center;">Yorumlar</h2>
         <br />
         <div id="commentsContainer">
             @await Html.PartialAsync("~/Views/BlogComments/_CommentsPartial.cshtml", Model.Comments)

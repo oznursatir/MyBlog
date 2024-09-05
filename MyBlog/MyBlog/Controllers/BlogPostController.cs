@@ -41,15 +41,24 @@ namespace MyBlog.Controllers
 
             
         }
-
+        
+        [Authorize(Roles = "Admin, Editor, User")]
         public async Task<IActionResult> Search(string searchTerm)
         {
             var model = new List<BlogPost>();
 
+            var contents = await _context.BlogPosts.ToListAsync();
+
+            foreach (var content in contents)
+            {
+                content.User = await _context.Users
+                    .FirstOrDefaultAsync(u => u.Id == content.UserId);
+            }
+
             if (!string.IsNullOrEmpty(searchTerm))
             {
                 model = await _context.BlogPosts
-                    .Where(b => b.Title.Contains(searchTerm) || b.UserId.Contains(searchTerm))
+                    .Where(b => b.Title.Contains(searchTerm) || b.User.FullName.Contains(searchTerm))
                     .ToListAsync();
             }
             else
@@ -83,7 +92,7 @@ namespace MyBlog.Controllers
             {
                 var normalizedSearch = searchValue.ToLower().Replace(" ", "");
                 posts = posts.Where(p => p.Title.ToLower().Contains(normalizedSearch) ||
-                                         p.UserId.ToLower().Contains(normalizedSearch));
+                                         p.User.FullName.ToLower().Contains(normalizedSearch));
             }
 
             var totalRecords = await posts.CountAsync();

@@ -4,7 +4,6 @@
     ViewData["Title"] = "Edit Blog Post";
 }
 
-<link rel="stylesheet" href="~/css/GeneralStyle.css" />
 <!-- Font Awesome -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
 <!-- Bootstrap -->
@@ -16,21 +15,35 @@
         justify-content: center;
         align-items: center;
     }
+
+    .box {
+        min-height: 320px;
+        box-shadow: 0 0 25px rgba(0, 0, 0, 0.3);
+        border-radius: 60px;
+        padding: 20px;
+        margin-top: 40px;
+        margin-bottom: 40px;
+    }
+
+    .bold-label {
+        font-weight: bold;
+    }
+
 </style>
 
 <div class="box">
-    <h1>Blog Post Düzenle</h1>
+    <h2 style="text-align:center;">Blog Post Düzenle</h2>
 
     <form asp-action="EditAdmin" method="post">
         <input type="hidden" asp-for="Id" />
         <input type="hidden" asp-for="UserId" />
         <div class="form-group">
-            <label asp-for="Title" class="control-label">Başlık</label>
+            <label asp-for="Title" class="bold-label">Başlık</label>
             <input asp-for="Title" class="form-control" />
             <span asp-validation-for="Title" class="text-danger"></span>
         </div>
         <div class="form-group">
-            <label asp-for="Content" class="control-label">İçerik</label>
+            <label asp-for="Content" class="bold-label">İçerik</label>
             <textarea asp-for="Content" class="form-control ckeditor"></textarea> <!-- CKEditor sınıfını burada ekledik -->
             <span asp-validation-for="Content" class="text-danger"></span>
         </div>
@@ -40,7 +53,7 @@
             <div class="form-group">
 
                 <input type="submit" asp-value="Kaydet" class="btn btn-primary" />
-                <a asp-action="Index" class="btn btn-secondary">Listeye Geri Dön</a>
+                <a asp-controller="Admin" asp-action="Index" class="btn btn-secondary">Listeye Geri Dön</a>
             </div>
 
 
@@ -48,7 +61,6 @@
 
         </div>
     </form>
-
 
 
     @section Scripts {

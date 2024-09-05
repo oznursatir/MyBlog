@@ -131,6 +131,7 @@ namespace MyBlog.Controllers
 
             var comments = await _context.Comments
                 .Include(c => c.BlogPost)
+                .Include(c => c.User)
                 .Where(c => c.UserId == userId)
                 .ToListAsync();
 

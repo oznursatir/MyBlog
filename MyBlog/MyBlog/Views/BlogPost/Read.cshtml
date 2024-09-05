@@ -14,17 +14,56 @@
 <!--datatables css-->
 <link rel="stylesheet" href="https://cdn.datatables.net/2.0.8/css/dataTables.jqueryui.min.css" />
 
+<style>
+    .box{
+        min-height: 320px;
+        padding: 20px;
+        margin-top: 40px;
+        margin-bottom: 40px;
+
+    }
+
+    .h2 {
+        color:black;
+    }
+
+    .table thead th{
+        background-color: #007bff; 
+        color: white; 
+    }
+
+    
+    .table tbody tr:nth-child(odd) {
+        background-color: white;
+    }
+
+    .table tbody tr:nth-child(even) {
+        background-color: lightgray;
+    }
+
+    .dataTables_wrapper .dataTables_filter input {
+        background-color: #f0f0f0;
+    }
+
+    .dt-container {
+        background-color: white;
+    }
+
+    
+</style>
+
+<div class="box">
 <h1>Kendi Blog Yazılarım</h1>
 
 <table id="postTable" class="table">
     <thead>
-        <tr>
-        </tr>
+        <th>
+        </th>
     </thead>
     <tbody>
     </tbody>
 </table>
-
+</div>
 @section Scripts {
     <script src="https://cdn.datatables.net/2.0.8/js/dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/2.0.8/js/dataTables.jqueryui.min.js"></script>
@@ -56,8 +95,8 @@
                     {
                         "data": "id",
                         "render": function (data) {
-                            return `<a href="/BlogPost/EditBlogPost?id=${data}">Edit</a> |
-                        <a href="/BlogPost/DeleteBlogPost?id=${data}">Delete</a>`;
+                            return `<a href="/BlogPost/EditBlogPost?id=${data}" class="btn btn-sm btn-primary">Edit</a> |
+                                <a href="/BlogPost/DeleteBlogPost?id=${data}" class="btn btn-sm btn-danger">Delete</a>`;
                         },
                         "orderable": false,
                         "title": "Aksiyon"

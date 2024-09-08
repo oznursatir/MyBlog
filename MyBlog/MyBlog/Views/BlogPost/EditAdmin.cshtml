@@ -3,7 +3,7 @@
 @{
     ViewData["Title"] = "Edit Blog Post";
 }
-
+<script src="https://cdn.ckeditor.com/ckeditor5/36.0.1/classic/ckeditor.js"></script>
 <!-- Font Awesome -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
 <!-- Bootstrap -->
@@ -61,16 +61,5 @@
 
         </div>
     </form>
-
-
-    @section Scripts {
-        <script src="https://cdn.ckeditor.com/ckeditor5/36.0.1/classic/ckeditor.js"></script>
-        <script>
-            ClassicEditor
-                .create(document.querySelector('.ckeditor'))
-                .catch(error => {
-                    console.error(error);
-                });
-        </script>
-    }
+    <script src="~/js/blogPost.js"></script>
 </div>
